@@ -6,7 +6,7 @@ namespace Lelebot.Commands
     {
         public override bool Match(Context context)
         {
-            if (context.Command == "creeper")
+            if (context.Command.ToLower() == "creeper")
             {
                 return true;
             }
