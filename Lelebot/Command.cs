@@ -42,7 +42,8 @@ namespace Lelebot
             List<Command> commands = Commands;
             for (int i = 0; i < commands.Count; i++)
             {
-                if (commands[i].Match(context))
+                bool match = commands[i].Match(context);
+                if (match)
                 {
                     command = (Command)Activator.CreateInstance(commands[i].GetType());
                     command.Context = context;
@@ -55,8 +56,9 @@ namespace Lelebot
         }
 
         public Context Context { get; set; }
+        public virtual bool TriggerTyping => true;
 
-        public abstract bool Match(Context context);
+        public abstract bool Match(Context ctx);
 
         public virtual void Run()
         {

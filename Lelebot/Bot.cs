@@ -1,18 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
+using System.Speech.AudioFormat;
+using System.Speech.Synthesis;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Audio;
 using Discord.WebSocket;
 
 namespace Lelebot
 {
     public class Bot
     {
+        public const ulong MyID = 419704867867852800;
         public bool CancellationRequested { get; private set; }
+        public static IAudioClient AudioClient { get; set; }
 
         private DiscordSocketClient client;
+        private List<Processor> processors = new List<Processor>();
 
         public Bot(string token)
         {
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            for (int a = 0; a < assemblies.Length; a++)
+            {
+                Type[] types = assemblies[a].GetTypes();
+                for (int t = 0; t < types.Length; t++)
+                {
+                    if (types[t].IsSubclassOf(typeof(Processor)))
+                    {
+                        Processor processor = (Processor)Activator.CreateInstance(types[t]);
+                        processors.Add(processor);
+                    }
+                }
+            }
+
             client = new DiscordSocketClient();
             client.Connected += OnConnected;
             client.Disconnected += OnDisconnected;
@@ -20,6 +43,10 @@ namespace Lelebot
             client.LoggedOut += OnLoggedOut;
             client.Ready += OnReady;
             client.MessageReceived += OnMessage;
+            client.UserJoined += OnUserJoinedServer;
+            client.UserLeft += OnUserLeftServer;
+            client.ChannelUpdated += OnChannelUpdated;
+            client.UserVoiceStateUpdated += OnUserVoiceUpdated;
 
             Start(token);
         }
@@ -34,6 +61,38 @@ namespace Lelebot
             catch (Exception exception)
             {
                 Console.WriteLine("[error] " + exception.Message.ToLower());
+            }
+        }
+
+        private async Task OnChannelUpdated(SocketChannel oldChannel, SocketChannel newChannel)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                processors[i].OnChannelUpdated(oldChannel, newChannel);
+            }
+        }
+
+        private async Task OnUserLeftServer(SocketGuildUser user)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                processors[i].OnUserLeftServer(user);
+            }
+        }
+
+        private async Task OnUserJoinedServer(SocketGuildUser user)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                processors[i].OnUserJoinedServer(user);
+            }
+        }
+
+        private async Task OnUserVoiceUpdated(SocketUser user, SocketVoiceState oldChannel, SocketVoiceState newChannel)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                processors[i].OnUserVoiceUpdated(user, oldChannel, newChannel);
             }
         }
 
@@ -62,16 +121,78 @@ namespace Lelebot
             Console.WriteLine("[bot] connected");
         }
 
+        public static async Task Say(Context ctx, string text)
+        {
+            SocketGuildChannel guildChannel = ctx.Message.Channel as SocketGuildChannel;
+            IGuild guild = guildChannel.Guild as IGuild;
+            SocketVoiceChannel voiceChannel = null;
+            foreach (SocketGuildChannel channel in await guild.GetVoiceChannelsAsync())
+            {
+                foreach (SocketGuildUser user in channel.Users)
+                {
+                    if (user.Id == MyID)
+                    {
+                        voiceChannel = channel as SocketVoiceChannel;
+                        break;
+                    }
+                }
+
+                if (voiceChannel != null)
+                {
+                    break;
+                }
+            }
+
+            if (AudioClient == null)
+            {
+                AudioClient = await voiceChannel.ConnectAsync();
+            }
+
+            if (voiceChannel == null)
+            {
+                return;
+            }
+
+            Console.WriteLine("[say] " + text);
+            Stream ret = new MemoryStream();
+            using (SpeechSynthesizer synth = new SpeechSynthesizer())
+            {
+                var mi = synth.GetType().GetMethod("SetOutputStream", BindingFlags.Instance | BindingFlags.NonPublic);
+                var fmt = new SpeechAudioFormatInfo(8000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
+                mi.Invoke(synth, new object[] { ret, fmt, true, true });
+                //synth.SelectVoice(voiceName);
+                synth.Speak(text);
+
+                await Task.Delay(500);
+                AudioOutStream discord = AudioClient.CreateOpusStream();
+                await ret.CopyToAsync(discord);
+                ret.Flush();
+            }
+        }
+
         private async Task OnMessage(SocketMessage message)
         {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                processors[i].OnMessage(message);
+            }
+
             if (TryGetContext(message.Content, out Context context))
             {
                 if (Command.TryGet(context, out Command command))
                 {
-                    await message.Channel.TriggerTypingAsync();
+                    if (command.TriggerTyping)
+                    {
+                        await message.Channel.TriggerTypingAsync();
+                    }
+
+                    SocketGuildChannel textChannel = message.Channel as SocketGuildChannel;
+                    SocketGuild guild = textChannel.Guild;
 
                     context.Author = message.Author;
                     context.Channel = message.Channel;
+                    context.Guild = guild;
+                    context.Message = message;
 
                     command.Context = context;
                     command.Run();
@@ -93,6 +214,7 @@ namespace Lelebot
 
         private bool TryGetContext(string text, out Context context)
         {
+            string originalText = text;
             if (!string.IsNullOrEmpty(text))
             {
                 int index = text.IndexOf(' ');
@@ -104,7 +226,7 @@ namespace Lelebot
                     context = new Context
                     {
                         Command = name,
-                        Text = text,
+                        Text = originalText,
                         Args = Parser.CommandLineToArgs(text)
                     };
                     return true;
@@ -114,7 +236,7 @@ namespace Lelebot
                     context = new Context
                     {
                         Command = text,
-                        Text = text
+                        Text = originalText
                     };
                     return true;
                 }

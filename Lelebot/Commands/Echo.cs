@@ -4,7 +4,7 @@
     {
         public override bool Match(Context context)
         {
-            if (context.Command == "echo")
+            if (context.Command == "echo" && context.Text.Length >= 6)
             {
                 return true;
             }
@@ -16,7 +16,7 @@
 
         public override void Run()
         {
-            Print(Context.Text);
+            Print(Context.Text.Substring(5));
         }
     }
 }
