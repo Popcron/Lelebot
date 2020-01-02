@@ -1,12 +1,15 @@
-﻿using Discord.Audio;
-using Discord.WebSocket;
+﻿using Discord.WebSocket;
+using System.Collections.Generic;
 
 namespace Lelebot.Commands
 {
     public class JoinChannel : Command
     {
+        public override string[] Names => new string[] { "join" };
+        public override string Description => "Asks the bot to join a voice channel.";
+        public override string Usage => "`join me` will make the bot join a voice channel that the message author is in.\nTyping `get <channelId>` also works";
         public override bool TriggerTyping => false;
-        
+
         public override bool Match(Context context)
         {
             if (context.Command == "join" && context.Args.Length == 1)

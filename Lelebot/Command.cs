@@ -6,15 +6,15 @@ namespace Lelebot
 {
     public abstract class Command
     {
-        private static List<Command> commands = null;
+        private static List<Command> all = null;
 
-        private static List<Command> Commands
+        public static List<Command> All
         {
             get
             {
-                if (commands == null)
+                if (all == null)
                 {
-                    commands = new List<Command>();
+                    all = new List<Command>();
                     Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
                     for (int a = 0; a < assemblies.Length; a++)
                     {
@@ -24,13 +24,13 @@ namespace Lelebot
                             if (types[t].IsSubclassOf(typeof(Command)))
                             {
                                 Command command = (Command)Activator.CreateInstance(types[t]);
-                                commands.Add(command);
+                                all.Add(command);
                             }
                         }
                     }
                 }
 
-                return commands;
+                return all;
             }
         }
 
@@ -39,7 +39,7 @@ namespace Lelebot
         /// </summary>
         public static bool TryGet(Context context, out Command command)
         {
-            List<Command> commands = Commands;
+            List<Command> commands = All;
             for (int i = 0; i < commands.Count; i++)
             {
                 bool match = commands[i].Match(context);
@@ -58,13 +58,34 @@ namespace Lelebot
         public Context Context { get; set; }
         public virtual bool TriggerTyping => true;
 
+        /// <summary>
+        /// Should return true if this context is appropriate for this command.
+        /// </summary>
         public abstract bool Match(Context ctx);
+
+        /// <summary>
+        /// The many names of this command.
+        /// </summary>
+        public abstract string[] Names { get; }
+
+        /// <summary>
+        /// What this commands does
+        /// </summary>
+        public virtual string Description => "";
+
+        /// <summary>
+        /// How to use this command, like an example.
+        /// </summary>
+        public virtual string Usage => "";
 
         public virtual void Run()
         {
 
         }
 
+        /// <summary>
+        /// Prints a message to the context origin.
+        /// </summary>
         protected void Print(string text)
         {
             if (Context.Channel != null)

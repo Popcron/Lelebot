@@ -1,27 +1,33 @@
 ﻿using Discord.WebSocket;
+using System.Threading.Tasks;
 
 namespace Lelebot
 {
     public class Processor
     {
-        public virtual void OnChannelUpdated(SocketChannel oldChannel, SocketChannel newChannel)
+        public virtual async Task OnChannelUpdated(SocketChannel oldChannel, SocketChannel newChannel)
         {
+            await Task.CompletedTask;
         }
 
-        public virtual void OnUserLeftServer(SocketGuildUser user)
+        public virtual async Task OnUserLeftServer(SocketGuildUser user)
         {
+            await Task.CompletedTask;
         }
 
-        public virtual void OnUserJoinedServer(SocketGuildUser user)
+        public virtual async Task OnUserJoinedServer(SocketGuildUser user)
         {
+            await Task.CompletedTask;
         }
 
-        public virtual void OnMessage(SocketMessage message)
+        public virtual async Task OnMessage(SocketMessage message)
         {
+            await Task.CompletedTask;
         }
 
-        public virtual void OnUserVoiceUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+        public virtual async Task OnUserVoiceUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
+            await Task.CompletedTask;
         }
     }
 }

@@ -4,9 +4,14 @@ namespace Lelebot.Commands
 {
     public class SayCreeper : Command
     {
+        public override string[] Names => new string[] { "creeper" };
+        public override string Description => "awwwwww man";
+
         public override bool Match(Context context)
         {
-            if (context.Command.ToLower() == "creeper")
+            //purposelly check the entire message regardless of context
+            //to be as annoying as possible
+            if (context.Text.ToLower().Contains("creeper"))
             {
                 return true;
             }
@@ -18,6 +23,7 @@ namespace Lelebot.Commands
 
         public override async void Run()
         {
+            //after 1 second, run this
             await Task.Delay(1000);
             Print("awwwww man");
         }

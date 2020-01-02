@@ -237,6 +237,7 @@
   <ItemGroup>
     <Compile Include="Bot.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\JoinChannel.cs" />
     <Compile Include="Commands\TTS.cs" />
     <Compile Include="Processors\UserJoinedTheChannel.cs" />

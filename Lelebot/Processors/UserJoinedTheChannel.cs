@@ -19,7 +19,7 @@ namespace Lelebot.Commands
             synth = new SpeechSynthesizer();
         }
 
-        public override void OnUserVoiceUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
+        public override async Task OnUserVoiceUpdated(SocketUser user, SocketVoiceState oldState, SocketVoiceState newState)
         {
             if (oldState.VoiceChannel != null && newState.VoiceChannel != null)
             {
@@ -46,6 +46,8 @@ namespace Lelebot.Commands
                     Console.WriteLine(user.Username + " has left");
                 }
             }
+
+            await Task.CompletedTask;
         }
 
         private Process CreateStream(string path)

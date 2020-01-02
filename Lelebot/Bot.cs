@@ -68,7 +68,7 @@ namespace Lelebot
         {
             for (int i = 0; i < processors.Count; i++)
             {
-                processors[i].OnChannelUpdated(oldChannel, newChannel);
+                await processors[i].OnChannelUpdated(oldChannel, newChannel);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Lelebot
         {
             for (int i = 0; i < processors.Count; i++)
             {
-                processors[i].OnUserLeftServer(user);
+                await processors[i].OnUserLeftServer(user);
             }
         }
 
@@ -84,7 +84,7 @@ namespace Lelebot
         {
             for (int i = 0; i < processors.Count; i++)
             {
-                processors[i].OnUserJoinedServer(user);
+                await processors[i].OnUserJoinedServer(user);
             }
         }
 
@@ -92,35 +92,43 @@ namespace Lelebot
         {
             for (int i = 0; i < processors.Count; i++)
             {
-                processors[i].OnUserVoiceUpdated(user, oldChannel, newChannel);
+                await processors[i].OnUserVoiceUpdated(user, oldChannel, newChannel);
             }
         }
 
         private async Task OnReady()
         {
             Console.WriteLine("[bot] ready");
+            await Task.CompletedTask;
         }
 
         private async Task OnLoggedOut()
         {
             Console.WriteLine("[bot] logged out");
+            await Task.CompletedTask;
         }
 
         private async Task OnLoggedIn()
         {
             Console.WriteLine("[bot] logged in");
+            await Task.CompletedTask;
         }
 
         private async Task OnDisconnected(Exception arg)
         {
             Console.WriteLine("[bot] disconnected");
+            await Task.CompletedTask;
         }
 
         private async Task OnConnected()
         {
             Console.WriteLine("[bot] connected");
+            await Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Says a message in a voice channel.
+        /// </summary>
         public static async Task Say(Context ctx, string text)
         {
             SocketGuildChannel guildChannel = ctx.Message.Channel as SocketGuildChannel;
@@ -157,8 +165,8 @@ namespace Lelebot
             Stream ret = new MemoryStream();
             using (SpeechSynthesizer synth = new SpeechSynthesizer())
             {
-                var mi = synth.GetType().GetMethod("SetOutputStream", BindingFlags.Instance | BindingFlags.NonPublic);
-                var fmt = new SpeechAudioFormatInfo(8000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
+                MethodInfo mi = synth.GetType().GetMethod("SetOutputStream", BindingFlags.Instance | BindingFlags.NonPublic);
+                SpeechAudioFormatInfo fmt = new SpeechAudioFormatInfo(8000, AudioBitsPerSample.Sixteen, AudioChannel.Mono);
                 mi.Invoke(synth, new object[] { ret, fmt, true, true });
                 //synth.SelectVoice(voiceName);
                 synth.Speak(text);
@@ -172,11 +180,13 @@ namespace Lelebot
 
         private async Task OnMessage(SocketMessage message)
         {
+            //invoke the raw processors
             for (int i = 0; i < processors.Count; i++)
             {
-                processors[i].OnMessage(message);
+                await processors[i].OnMessage(message);
             }
 
+            //try and invoke a command
             if (TryGetContext(message.Content, out Context context))
             {
                 if (Command.TryGet(context, out Command command))
@@ -200,6 +210,9 @@ namespace Lelebot
             }
         }
 
+        /// <summary>
+        /// Runs a command.
+        /// </summary>
         public void Run(string text)
         {
             if (TryGetContext(text, out Context context))
@@ -212,6 +225,9 @@ namespace Lelebot
             }
         }
 
+        /// <summary>
+        /// Tries to create a context element from a message.
+        /// </summary>
         private bool TryGetContext(string text, out Context context)
         {
             string originalText = text;
