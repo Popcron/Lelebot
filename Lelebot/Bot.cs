@@ -180,6 +180,12 @@ namespace Lelebot
 
         private async Task OnMessage(SocketMessage message)
         {
+            //dont run on self
+            if (message.Author.Id == client.CurrentUser.Id)
+            {
+                return;
+            }
+
             //invoke the raw processors
             for (int i = 0; i < processors.Count; i++)
             {
@@ -197,13 +203,12 @@ namespace Lelebot
                     }
 
                     SocketGuildChannel textChannel = message.Channel as SocketGuildChannel;
-                    SocketGuild guild = textChannel.Guild;
+                    SocketGuild guild = textChannel?.Guild;
 
                     context.Author = message.Author;
                     context.Channel = message.Channel;
                     context.Guild = guild;
                     context.Message = message;
-
                     command.Context = context;
                     command.Run();
                 }

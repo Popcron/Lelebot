@@ -61,7 +61,7 @@ namespace Lelebot
         /// <summary>
         /// Should return true if this context is appropriate for this command.
         /// </summary>
-        public abstract bool Match(Context ctx);
+        public abstract bool Match(Context context);
 
         /// <summary>
         /// The many names of this command.
@@ -86,11 +86,11 @@ namespace Lelebot
         /// <summary>
         /// Prints a message to the context origin.
         /// </summary>
-        protected void Print(string text)
+        protected void Print(object text)
         {
             if (Context.Channel != null)
             {
-                Context.Channel.SendMessageAsync(text);
+                Context.Channel.SendMessageAsync(text.ToString());
             }
             else
             {

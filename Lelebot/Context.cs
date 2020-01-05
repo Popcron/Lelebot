@@ -5,7 +5,13 @@ namespace Lelebot
     public class Context
     {
         public SocketUser Author { get; set; }
+
+        /// <summary>
+        /// The channel that this message originated from.
+        /// Null if came from the console window.
+        /// </summary>
         public ISocketMessageChannel Channel { get; set; }
+
         public SocketMessage Message { get; set; }
         public SocketGuild Guild { get; set; }
 

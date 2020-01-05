@@ -6,6 +6,7 @@ namespace Lelebot.Commands
     {
         public override string[] Names => new string[] { "creeper" };
         public override string Description => "awwwwww man";
+        public override bool TriggerTyping => true;
 
         public override bool Match(Context context)
         {
