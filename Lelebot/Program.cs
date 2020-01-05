@@ -1,17 +1,48 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Lelebot
 {
     public class Program
     {
+        public class Info
+        {
+            public string token;
+            public DateTime version;
+        }
+
+        public static Info ProgramInfo { get; private set; } = null;
+
         private static Bot bot;
 
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
-            string token = GetToken();
-            bot = new Bot(token);
+            //load the info
+            ProgramInfo = Load();
+            if (ProgramInfo == null)
+            {
+                Console.WriteLine("Press any key to close...");
+                Console.Read();
+                return;
+            }
 
+            //check for updates first
+            bool updateAvailable = await Updater.IsUpdateAvailable();
+            if (updateAvailable)
+            {
+                Console.WriteLine("[updater] an update is available, update? say `ok` to update");
+                string response = Console.ReadLine();
+                if (response.ToLower() == "ok")
+                {
+                    Updater.Update();
+                    return;
+                }
+            }
+
+            //start the bot process
+            bot = new Bot(ProgramInfo);
             while (true)
             {
                 string command = Console.ReadLine();
@@ -19,16 +50,26 @@ namespace Lelebot
             }
         }
 
-        private static string GetToken()
+        private static Info Load()
         {
-            string pathToTokenFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "token.txt");
+            string pathToTokenFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "info.json");
             if (File.Exists(pathToTokenFile))
             {
-                return File.ReadAllText(pathToTokenFile);
+                string contents = File.ReadAllText(pathToTokenFile);
+                try
+                {
+                    Info info = JsonConvert.DeserializeObject<Info>(contents);
+                    return info;
+                }
+                catch
+                {
+                    Console.WriteLine("[program] couldnt parse info.json correctly");
+                    return null;
+                }
             }
             else
             {
-                Console.WriteLine("[program] token.txt file not present beside the executable");
+                Console.WriteLine("[program] info.json file not present beside the executable");
                 return null;
             }
         }

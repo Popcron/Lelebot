@@ -20,8 +20,14 @@ namespace Lelebot
         private DiscordSocketClient client;
         private List<Processor> processors = new List<Processor>();
 
-        public Bot(string token)
+        public Bot(Program.Info info)
         {
+            Initialize(info);
+        }
+
+        private void Initialize(Program.Info info)
+        {
+            //create all processors
             Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
             for (int a = 0; a < assemblies.Length; a++)
             {
@@ -36,6 +42,7 @@ namespace Lelebot
                 }
             }
 
+            //create the discord client
             client = new DiscordSocketClient();
             client.Connected += OnConnected;
             client.Disconnected += OnDisconnected;
@@ -48,7 +55,8 @@ namespace Lelebot
             client.ChannelUpdated += OnChannelUpdated;
             client.UserVoiceStateUpdated += OnUserVoiceUpdated;
 
-            Start(token);
+            //start the discord client
+            Start(info.token);
         }
 
         private async void Start(string token)
