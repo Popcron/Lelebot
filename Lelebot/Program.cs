@@ -7,12 +7,6 @@ namespace Lelebot
 {
     public class Program
     {
-        public class Info
-        {
-            public string token;
-            public DateTime version;
-        }
-
         public static Info ProgramInfo { get; private set; } = null;
 
         private static Bot bot;
@@ -34,7 +28,7 @@ namespace Lelebot
             {
                 Console.WriteLine("[updater] an update is available, update? say `ok` to update");
                 string response = Console.ReadLine();
-                if (response.ToLower() == "ok")
+                if (response.Equals("ok", StringComparison.OrdinalIgnoreCase))
                 {
                     Updater.Update();
                     return;

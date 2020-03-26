@@ -1,10 +1,8 @@
-﻿using Discord;
-using Discord.Audio;
+﻿using Discord.Audio;
 using Discord.WebSocket;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Speech.AudioFormat;
 using System.Speech.Synthesis;
 using System.Threading.Tasks;
 
@@ -23,25 +21,25 @@ namespace Lelebot.Commands
         {
             if (oldState.VoiceChannel != null && newState.VoiceChannel != null)
             {
-                if (newState.VoiceChannel.GetUser(Bot.MyID) != null)
+                if (newState.VoiceChannel.GetUser(Bot.Info.botUserId) != null)
                 {
                     Console.WriteLine(user.Username + " has joined");
                 }
-                else if (oldState.VoiceChannel.GetUser(Bot.MyID) != null)
+                else if (oldState.VoiceChannel.GetUser(Bot.Info.botUserId) != null)
                 {
                     Console.WriteLine(user.Username + " has left");
                 }
             }
             else if (oldState.VoiceChannel == null)
             {
-                if (newState.VoiceChannel.GetUser(Bot.MyID) != null)
+                if (newState.VoiceChannel.GetUser(Bot.Info.botUserId) != null)
                 {
                     Console.WriteLine(user.Username + " has joined");
                 }
             }
             else if (newState.VoiceChannel == null)
             {
-                if (oldState.VoiceChannel.GetUser(Bot.MyID) != null)
+                if (oldState.VoiceChannel.GetUser(Bot.Info.botUserId) != null)
                 {
                     Console.WriteLine(user.Username + " has left");
                 }

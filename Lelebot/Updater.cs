@@ -18,6 +18,21 @@ namespace Lelebot
             client = new GitHubClient(productInformation);
         }
 
+        public static async Task<bool> DoesRepositoryExist()
+        {
+            //check if repo still exists
+            try
+            {
+                Repository repo = await client.Repository.Get("popcron", "lelebot");
+                return repo != null;
+            }
+            catch (Exception exception)
+            {
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Checks for an update by polling the github repo.
         /// </summary>
@@ -25,17 +40,15 @@ namespace Lelebot
         {
             Console.WriteLine("[updater] checking for updates");
 
-            try
+            bool exists = await DoesRepositoryExist();
+            if (exists)
             {
                 IReadOnlyList<Release> releases = await client.Repository.Release.GetAll("popcron", "lelebot");
                 Release latest = releases.OrderBy(x => x.CreatedAt).First();
                 Console.WriteLine($"[debug] latest release is {latest.Name}");
             }
-            catch
-            {
 
-            }
-
+            Console.WriteLine("[updater] up to date yo");
             return false;
         }
 

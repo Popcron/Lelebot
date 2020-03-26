@@ -78,6 +78,11 @@ namespace Lelebot
         /// </summary>
         public virtual string Usage => "";
 
+        /// <summary>
+        /// The bot that called this command.
+        /// </summary>
+        public Bot Bot { get; set; }
+
         public virtual void Run()
         {
 

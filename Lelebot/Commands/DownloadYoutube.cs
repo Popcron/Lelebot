@@ -1,4 +1,6 @@
-﻿namespace Lelebot.Commands
+﻿using System.Threading.Tasks;
+
+namespace Lelebot.Commands
 {
     public class DownloadYoutube : Command
     {
@@ -24,7 +26,7 @@
 
         public override async void Run()
         {
-
+            await Task.CompletedTask;
         }
     }
 }

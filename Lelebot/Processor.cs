@@ -5,6 +5,11 @@ namespace Lelebot
 {
     public class Processor
     {
+        /// <summary>
+        /// The bot that is using this processor.
+        /// </summary>
+        public Bot Bot { get; set; }
+
         public virtual async Task OnChannelUpdated(SocketChannel oldChannel, SocketChannel newChannel)
         {
             await Task.CompletedTask;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Speech.AudioFormat;
@@ -13,36 +14,52 @@ namespace Lelebot
 {
     public class Bot
     {
-        public const ulong MyID = 419704867867852800;
         public bool CancellationRequested { get; private set; }
         public static IAudioClient AudioClient { get; set; }
+
+        /// <summary>
+        /// The info that this bot was loaded with.
+        /// </summary>
+        public Info Info { get; }
 
         private DiscordSocketClient client;
         private List<Processor> processors = new List<Processor>();
 
-        public Bot(Program.Info info)
+        public Bot(Info info)
         {
-            Initialize(info);
+            Info = info;
+            Console.WriteLine("[bot] initializing bot");
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            LoadProcessors();
+            Initialize();
+            stopwatch.Stop();
+
+            Console.WriteLine($"[bot] initialized bot in {stopwatch.ElapsedMilliseconds}ms");
         }
 
-        private void Initialize(Program.Info info)
+        private void LoadProcessors()
         {
             //create all processors
-            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            for (int a = 0; a < assemblies.Length; a++)
+            Assembly assembly = typeof(Program).Assembly;
+            Type[] types = assembly.GetTypes();
+            for (int t = 0; t < types.Length; t++)
             {
-                Type[] types = assemblies[a].GetTypes();
-                for (int t = 0; t < types.Length; t++)
+                if (types[t].IsSubclassOf(typeof(Processor)))
                 {
-                    if (types[t].IsSubclassOf(typeof(Processor)))
-                    {
-                        Processor processor = (Processor)Activator.CreateInstance(types[t]);
-                        processors.Add(processor);
-                    }
+                    Processor processor = (Processor)Activator.CreateInstance(types[t]);
+                    processor.Bot = this;
+                    processors.Add(processor);
+                    Console.WriteLine($"[bot] created processor {processor.GetType().Name}");
                 }
             }
+        }
 
+        private void Initialize()
+        {
             //create the discord client
+            Console.WriteLine($"[bot] creating socket client");
             client = new DiscordSocketClient();
             client.Connected += OnConnected;
             client.Disconnected += OnDisconnected;
@@ -55,8 +72,7 @@ namespace Lelebot
             client.ChannelUpdated += OnChannelUpdated;
             client.UserVoiceStateUpdated += OnUserVoiceUpdated;
 
-            //start the discord client
-            Start(info.token);
+            Start(Info.token);
         }
 
         private async void Start(string token)
@@ -68,7 +84,7 @@ namespace Lelebot
             }
             catch (Exception exception)
             {
-                Console.WriteLine("[error] " + exception.Message.ToLower());
+                Console.WriteLine($"[error] {exception.Message.ToLower()}");
             }
         }
 
@@ -137,7 +153,7 @@ namespace Lelebot
         /// <summary>
         /// Says a message in a voice channel.
         /// </summary>
-        public static async Task Say(Context ctx, string text)
+        public async Task Say(Context ctx, string text)
         {
             SocketGuildChannel guildChannel = ctx.Message.Channel as SocketGuildChannel;
             IGuild guild = guildChannel.Guild as IGuild;
@@ -146,7 +162,7 @@ namespace Lelebot
             {
                 foreach (SocketGuildUser user in channel.Users)
                 {
-                    if (user.Id == MyID)
+                    if (user.Id == Info.botUserId)
                     {
                         voiceChannel = channel as SocketVoiceChannel;
                         break;
@@ -169,7 +185,7 @@ namespace Lelebot
                 return;
             }
 
-            Console.WriteLine("[say] " + text);
+            Console.WriteLine($"[say] {text}");
             Stream ret = new MemoryStream();
             using (SpeechSynthesizer synth = new SpeechSynthesizer())
             {
@@ -218,6 +234,7 @@ namespace Lelebot
                     context.Guild = guild;
                     context.Message = message;
                     command.Context = context;
+                    command.Bot = this;
                     command.Run();
                 }
             }
@@ -233,6 +250,7 @@ namespace Lelebot
                 if (Command.TryGet(context, out Command command))
                 {
                     command.Context = context;
+                    command.Bot = this;
                     command.Run();
                 }
             }
