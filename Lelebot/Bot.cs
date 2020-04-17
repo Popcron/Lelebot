@@ -56,11 +56,13 @@ namespace Lelebot
             }
         }
 
-        private void Initialize()
+        private async void Initialize()
         {
             //create the discord client
             Console.WriteLine($"[bot] creating socket client");
-            client = new DiscordSocketClient();
+            DiscordSocketConfig config = new DiscordSocketConfig();
+            config.LogLevel = LogSeverity.Verbose;
+            client = new DiscordSocketClient(config);
             client.Connected += OnConnected;
             client.Disconnected += OnDisconnected;
             client.LoggedIn += OnLoggedIn;
@@ -72,10 +74,10 @@ namespace Lelebot
             client.ChannelUpdated += OnChannelUpdated;
             client.UserVoiceStateUpdated += OnUserVoiceUpdated;
 
-            Start(Info.token);
+            await Start(Info.token);
         }
 
-        private async void Start(string token)
+        private async Task Start(string token)
         {
             try
             {

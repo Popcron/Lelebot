@@ -1,4 +1,6 @@
-﻿namespace Lelebot.Commands
+﻿using System;
+
+namespace Lelebot.Commands
 {
     public class Echo : Command
     {
@@ -8,7 +10,7 @@
 
         public override bool Match(Context context)
         {
-            if (context.Command == "echo" && context.Text.Length >= 6)
+            if (context.Command.Equals("echo", StringComparison.OrdinalIgnoreCase) && context.Text?.Length >= 6)
             {
                 return true;
             }

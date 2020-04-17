@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
@@ -12,7 +13,7 @@ namespace Lelebot.Commands
         {
             //purposelly check the entire message regardless of context
             //to be as annoying as possible
-            if (context.Text.ToLower().Contains("creeper"))
+            if (context.Text.IndexOf("creeper", StringComparison.OrdinalIgnoreCase) != -1)
             {
                 return true;
             }

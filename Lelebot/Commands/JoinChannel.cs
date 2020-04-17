@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using System;
 using System.Collections.Generic;
 
 namespace Lelebot.Commands
@@ -7,14 +8,14 @@ namespace Lelebot.Commands
     {
         public override string[] Names => new string[] { "join" };
         public override string Description => "Asks the bot to join a voice channel.";
-        public override string Usage => "`join me` will make the bot join a voice channel that the message author is in.\nTyping `get <channelId>` also works";
+        public override string Usage => "`join me` will make the bot join a voice channel that the message author is in.\nTyping `join <channelId>` also works";
         public override bool TriggerTyping => false;
 
         public override bool Match(Context context)
         {
-            if (context.Command == "join" && context.Args.Length == 1)
+            if (context.Command.Equals("join", StringComparison.OrdinalIgnoreCase) && context.Args?.Length == 1)
             {
-                return context.Args[0] == "me" || ulong.TryParse(context.Args[0], out _);
+                return context.Args[0].Equals("me", StringComparison.OrdinalIgnoreCase) || ulong.TryParse(context.Args[0], out _);
             }
             else
             {

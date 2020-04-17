@@ -10,7 +10,7 @@ namespace Lelebot.Commands
 
         public override bool Match(Context context)
         {
-            if (context.Command == "help")
+            if (context.Command.Equals("help", StringComparison.OrdinalIgnoreCase))
             {
                 return true;
             }
@@ -27,7 +27,7 @@ namespace Lelebot.Commands
             builder.AppendLine("```");
             foreach (Command command in All)
             {
-                if (command.Names != null && command.Names.Length > 0)
+                if (command.Names != null && command.Names?.Length > 0)
                 {
                     builder.Append(string.Join(", ", command.Names));
                 }

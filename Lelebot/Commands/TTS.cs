@@ -1,4 +1,6 @@
-﻿namespace Lelebot.Commands
+﻿using System;
+
+namespace Lelebot.Commands
 {
     public class TTS : Command
     {
@@ -9,7 +11,7 @@
 
         public override bool Match(Context ctx)
         {
-            if (ctx.Command.ToLower() == "say" && ctx.Text.Length >= 5)
+            if (ctx.Command.Equals("say", StringComparison.OrdinalIgnoreCase) && ctx.Text?.Length >= 5)
             {
                 return true;
             }
