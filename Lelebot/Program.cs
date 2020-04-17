@@ -13,11 +13,13 @@ namespace Lelebot
 
         public static async Task Main(string[] args)
         {
+            Console.WriteLine("[main] starting");
+
             //load the info
             ProgramInfo = Load();
             if (ProgramInfo == null)
             {
-                Console.WriteLine("Press any key to close...");
+                Console.WriteLine("[main] no program info found, press any key to close");
                 Console.Read();
                 return;
             }
@@ -33,6 +35,10 @@ namespace Lelebot
                     Updater.Update();
                     return;
                 }
+            }
+            else
+            {
+                Console.WriteLine("[updater] supposedly up to date");
             }
 
             //start the bot process

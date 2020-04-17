@@ -20,14 +20,22 @@ namespace Lelebot
 
         public static async Task<bool> DoesRepositoryExist()
         {
-            //check if repo still exists
             try
             {
+                //check if repo still exists
                 Repository repo = await client.Repository.Get("popcron", "lelebot");
                 return repo != null;
             }
             catch (Exception exception)
             {
+                if (exception is NotFoundException)
+                {
+                    Console.WriteLine("[updater] repo not found");
+                }
+                else
+                {
+                    Console.WriteLine(exception.ToString());
+                }
             }
 
             return false;
@@ -48,7 +56,6 @@ namespace Lelebot
                 Console.WriteLine($"[debug] latest release is {latest.Name}");
             }
 
-            Console.WriteLine("[updater] up to date yo");
             return false;
         }
 
