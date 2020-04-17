@@ -235,9 +235,8 @@ namespace Lelebot
                     context.Channel = message.Channel;
                     context.Guild = guild;
                     context.Message = message;
-                    command.Context = context;
                     command.Bot = this;
-                    command.Run();
+                    command.Run(context);
                 }
             }
         }
@@ -251,9 +250,8 @@ namespace Lelebot
             {
                 if (Command.TryGet(context, out Command command))
                 {
-                    command.Context = context;
                     command.Bot = this;
-                    command.Run();
+                    command.Run(context);
                 }
             }
         }

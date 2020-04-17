@@ -23,11 +23,11 @@ namespace Lelebot.Commands
             }
         }
 
-        public override async void Run()
+        public override async void Run(Context context)
         {
             //after 1 second, run this
-            await Task.Delay(1000);
-            Print("awwwww man");
+            await Task.Delay(1400);
+            SendText(context, "awwwww man");
         }
     }
 }

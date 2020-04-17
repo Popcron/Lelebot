@@ -266,6 +266,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="Commands\Help.cs" />
     <Compile Include="Commands\JoinChannel.cs" />
+    <Compile Include="Commands\Pin.cs" />
     <Compile Include="Commands\TTS.cs" />
     <Compile Include="Info.cs" />
     <Compile Include="Processors\UserJoinedTheChannel.cs" />

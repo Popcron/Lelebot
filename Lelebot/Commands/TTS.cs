@@ -9,9 +9,9 @@ namespace Lelebot.Commands
         public override string Usage => "`say creeper` will make the bot say creeper in a voice channel.";
         public override bool TriggerTyping => false;
 
-        public override bool Match(Context ctx)
+        public override bool Match(Context context)
         {
-            if (ctx.Command.Equals("say", StringComparison.OrdinalIgnoreCase) && ctx.Text?.Length >= 5)
+            if (context.Command.Equals("say", StringComparison.OrdinalIgnoreCase) && context.Text?.Length >= 5)
             {
                 return true;
             }
@@ -21,10 +21,10 @@ namespace Lelebot.Commands
             }
         }
 
-        public override async void Run()
+        public override async void Run(Context context)
         {
-            string text = Context.Text.Substring(4);
-            await Bot.Say(Context, text);
+            string text = context.Text.Substring(4);
+            await Bot.Say(context, text);
         }
     }
 }

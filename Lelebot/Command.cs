@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace Lelebot
@@ -46,7 +47,6 @@ namespace Lelebot
                 if (match)
                 {
                     command = (Command)Activator.CreateInstance(commands[i].GetType());
-                    command.Context = context;
                     return true;
                 }
             }
@@ -55,8 +55,7 @@ namespace Lelebot
             return false;
         }
 
-        public Context Context { get; set; }
-        public virtual bool TriggerTyping => true;
+        public abstract bool TriggerTyping { get; }
 
         /// <summary>
         /// Should return true if this context is appropriate for this command.
@@ -83,23 +82,37 @@ namespace Lelebot
         /// </summary>
         public Bot Bot { get; set; }
 
-        public virtual void Run()
+        public virtual void Run(Context context)
         {
 
         }
 
         /// <summary>
         /// Prints a message to the context origin.
+        /// This is either the console window or the text channel.
         /// </summary>
-        protected void Print(object text)
+        protected void SendText(Context context, object text)
         {
-            if (Context.Channel != null)
+            if (context.Channel != null)
             {
-                Context.Channel.SendMessageAsync(text.ToString());
+                context.Channel.SendMessageAsync(text?.ToString());
             }
             else
             {
                 Console.WriteLine(text);
+            }
+        }
+
+        protected void SendAttachment(Context context, byte[] data, string fileName, object text = null)
+        {
+            if (context.Channel != null)
+            {
+                Stream stream = new MemoryStream(data);
+                context.Channel.SendFileAsync(stream, fileName, text?.ToString());
+            }
+            else
+            {
+                Console.WriteLine($"byte data {data.Length}, {text?.ToString()}");
             }
         }
     }

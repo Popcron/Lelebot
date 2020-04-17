@@ -7,6 +7,7 @@ namespace Lelebot.Commands
     {
         public override string[] Names => new string[] { "help" };
         public override string Description => "Prints out a list of the commands registered.";
+        public override bool TriggerTyping => true;
 
         public override bool Match(Context context)
         {
@@ -20,7 +21,7 @@ namespace Lelebot.Commands
             }
         }
 
-        public override void Run()
+        public override void Run(Context context)
         {
             //build the text that contains all the info the show
             StringBuilder builder = new StringBuilder();
@@ -75,11 +76,11 @@ namespace Lelebot.Commands
                 int start = i * limit;
                 if (i == splits - 1)
                 {
-                    Print(text.Substring(start));
+                    SendText(context, text.Substring(start));
                 }
                 else
                 {
-                    Print(text.Substring(start, limit));
+                    SendText(context, text.Substring(start, limit));
                 }
             }
         }

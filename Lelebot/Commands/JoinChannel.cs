@@ -23,23 +23,23 @@ namespace Lelebot.Commands
             }
         }
 
-        public override async void Run()
+        public override async void Run(Context context)
         {
-            if (Context.Channel != null)
+            if (context.Channel != null)
             {
-                SocketGuildChannel textChannel = Context.Channel as SocketGuildChannel;
+                SocketGuildChannel textChannel = context.Channel as SocketGuildChannel;
                 SocketGuild guild = textChannel.Guild;
 
-                Context.DeleteMessage();
+                context.DeleteMessage();
 
                 ulong id = 0;
-                if (Context.Args[0] == "me")
+                if (context.Args[0] == "me")
                 {
                     foreach (SocketVoiceChannel channel in guild.VoiceChannels)
                     {
                         foreach (SocketGuildUser user in channel.Users)
                         {
-                            if (user == Context.Author)
+                            if (user == context.Author)
                             {
                                 id = channel.Id;
                                 break;
@@ -49,7 +49,7 @@ namespace Lelebot.Commands
                 }
                 else
                 {
-                    id = ulong.Parse(Context.Args[0]);
+                    id = ulong.Parse(context.Args[0]);
                 }
 
                 if (id != 0)

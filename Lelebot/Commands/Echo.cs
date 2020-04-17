@@ -7,6 +7,7 @@ namespace Lelebot.Commands
         public override string[] Names => new string[] { "echo" };
         public override string Description => "Repeats whatever is said after the command.";
         public override string Usage => "`echo lorem ipsum` will print out `lorem ipsum`";
+        public override bool TriggerTyping => true;
 
         public override bool Match(Context context)
         {
@@ -20,9 +21,10 @@ namespace Lelebot.Commands
             }
         }
 
-        public override void Run()
+        public override void Run(Context context)
         {
-            Print(Context.Text.Substring(5));
+            string message = context.Text.Substring(5);
+            SendText(context, message);
         }
     }
 }
