@@ -16,6 +16,7 @@ namespace Lelebot
     {
         public bool CancellationRequested { get; private set; }
         public static IAudioClient AudioClient { get; set; }
+        public DiscordSocketClient Client => client;
 
         /// <summary>
         /// The info that this bot was loaded with.
@@ -32,7 +33,6 @@ namespace Lelebot
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            LoadProcessors();
             Initialize();
             stopwatch.Stop();
 
@@ -41,17 +41,31 @@ namespace Lelebot
 
         private void LoadProcessors()
         {
+            string processorsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Processors");
+            if (!Directory.Exists(processorsFolder))
+            {
+                Directory.CreateDirectory(processorsFolder);
+            }
+
             //create all processors
             Assembly assembly = typeof(Program).Assembly;
             Type[] types = assembly.GetTypes();
             for (int t = 0; t < types.Length; t++)
             {
-                if (types[t].IsSubclassOf(typeof(Processor)))
+                Type type = types[t];
+                if (type.IsSubclassOf(typeof(Processor)))
                 {
-                    Processor processor = (Processor)Activator.CreateInstance(types[t]);
-                    processor.Bot = this;
+                    string processorFolder = Path.Combine(processorsFolder, type.Name);
+                    if (!Directory.Exists(processorFolder))
+                    {
+                        Directory.CreateDirectory(processorFolder);
+                    }
+
+                    Processor processor = (Processor)Activator.CreateInstance(type);
+                    processor.OnCreated(this);
+
                     processors.Add(processor);
-                    Console.WriteLine($"[bot] created processor {processor.GetType().Name}");
+                    Console.WriteLine($"[bot] created processor {type.Name}");
                 }
             }
         }
@@ -63,30 +77,36 @@ namespace Lelebot
             DiscordSocketConfig config = new DiscordSocketConfig();
             config.LogLevel = LogSeverity.Verbose;
             client = new DiscordSocketClient(config);
+
             client.Connected += OnConnected;
             client.Disconnected += OnDisconnected;
             client.LoggedIn += OnLoggedIn;
             client.LoggedOut += OnLoggedOut;
             client.Ready += OnReady;
             client.MessageReceived += OnMessage;
+            client.UserBanned += (SocketUser user, SocketGuild guild) => OnUserBanned(user, guild, true);
+            client.UserUnbanned += (SocketUser user, SocketGuild guild) => OnUserBanned(user, guild, false);
+            client.GuildUpdated += OnGuildUpdated;
             client.UserJoined += OnUserJoinedServer;
             client.UserLeft += OnUserLeftServer;
             client.ChannelUpdated += OnChannelUpdated;
             client.UserVoiceStateUpdated += OnUserVoiceUpdated;
 
-            await Start(Info.token);
+            await Start();
         }
 
-        private async Task Start(string token)
+        private async Task Start()
         {
             try
             {
-                await client.LoginAsync(TokenType.Bot, token);
+                Console.WriteLine($"[bot] attempting to login and start the bot");
+                await client.LoginAsync(TokenType.Bot, Info.token);
                 await client.StartAsync();
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"[error] {exception.Message.ToLower()}");
+                Console.WriteLine($"[exception] {exception.Message}");
+                Console.WriteLine($"stack: {exception.StackTrace}");
             }
         }
 
@@ -95,6 +115,22 @@ namespace Lelebot
             for (int i = 0; i < processors.Count; i++)
             {
                 await processors[i].OnChannelUpdated(oldChannel, newChannel);
+            }
+        }
+
+        private async Task OnUserBanned(SocketUser user, SocketGuild guild, bool isBanned)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                await processors[i].OnUserBanned(user, guild, isBanned);
+            }
+        }
+
+        private async Task OnGuildUpdated(SocketGuild before, SocketGuild after)
+        {
+            for (int i = 0; i < processors.Count; i++)
+            {
+                await processors[i].OnGuildUpdated(before, after);
             }
         }
 
@@ -125,6 +161,7 @@ namespace Lelebot
         private async Task OnReady()
         {
             Console.WriteLine("[bot] ready");
+            LoadProcessors();
             await Task.CompletedTask;
         }
 
@@ -164,7 +201,7 @@ namespace Lelebot
             {
                 foreach (SocketGuildUser user in channel.Users)
                 {
-                    if (user.Id == Info.botUserId)
+                    if (user.Id == Info.clientId)
                     {
                         voiceChannel = channel as SocketVoiceChannel;
                         break;
@@ -219,23 +256,26 @@ namespace Lelebot
             }
 
             //try and invoke a command
+            Console.WriteLine(message);
             if (TryGetContext(message.Content, out Context context))
             {
+                SocketGuildChannel textChannel = message.Channel as SocketGuildChannel;
+                SocketGuild guild = textChannel?.Guild;
+
+                context.Message = message;
+                context.Author = message.Author;
+                context.Channel = message.Channel;
+                context.Guild = guild;
+
                 if (Command.TryGet(context, out Command command))
                 {
+                    command.Bot = this;
+
                     if (command.TriggerTyping)
                     {
                         await message.Channel.TriggerTypingAsync();
                     }
 
-                    SocketGuildChannel textChannel = message.Channel as SocketGuildChannel;
-                    SocketGuild guild = textChannel?.Guild;
-
-                    context.Author = message.Author;
-                    context.Channel = message.Channel;
-                    context.Guild = guild;
-                    context.Message = message;
-                    command.Bot = this;
                     command.Run(context);
                 }
             }

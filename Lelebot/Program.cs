@@ -20,7 +20,7 @@ namespace Lelebot
             if (ProgramInfo == null)
             {
                 Console.WriteLine("[main] no program info found, press any key to close");
-                Console.Read();
+                Console.ReadKey();
                 return;
             }
 
@@ -50,9 +50,21 @@ namespace Lelebot
             }
         }
 
+        private static void EnsureTemplateExists()
+        {
+            Info template = new Info();
+            string fileName = "info.json.template";
+            string pathToTemplate = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
+            string json = JsonConvert.SerializeObject(template, Formatting.Indented);
+            File.WriteAllText(pathToTemplate, json);
+        }
+
         private static Info Load()
         {
-            string pathToTokenFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "info.json");
+            EnsureTemplateExists();
+
+            string fileName = "info.json";
+            string pathToTokenFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
             if (File.Exists(pathToTokenFile))
             {
                 string contents = File.ReadAllText(pathToTokenFile);
@@ -63,13 +75,13 @@ namespace Lelebot
                 }
                 catch
                 {
-                    Console.WriteLine("[program] couldnt parse info.json correctly");
+                    Console.WriteLine($"[program] couldnt parse {fileName} correctly");
                     return null;
                 }
             }
             else
             {
-                Console.WriteLine("[program] info.json file not present beside the executable");
+                Console.WriteLine($"[program] {fileName} file not present beside the executable");
                 return null;
             }
         }
