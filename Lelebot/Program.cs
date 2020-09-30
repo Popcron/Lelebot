@@ -32,13 +32,8 @@ namespace Lelebot
             bool updateAvailable = await Updater.IsUpdateAvailable();
             if (updateAvailable)
             {
-                Console.WriteLine("[updater] an update is available, update? say `ok` to update");
-                string response = Console.ReadLine();
-                if (response.Equals("ok", StringComparison.OrdinalIgnoreCase))
-                {
-                    Updater.Update();
-                    return;
-                }
+                await Updater.Update();
+                return;
             }
             else
             {
