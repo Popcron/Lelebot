@@ -1,8 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Lelebot
@@ -19,7 +17,7 @@ namespace Lelebot
         public static async Task Main(string[] args)
         {
             Console.WriteLine("[main] starting");
-            Console.WriteLine($"[main] version: {Updater.Version}");
+            Console.WriteLine($"[main] version: {Info.Version}");
 
             //load the info
             ProgramInfo = Load();

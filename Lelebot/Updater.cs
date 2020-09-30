@@ -12,11 +12,6 @@ namespace Lelebot
     {
         private static GitHubClient client;
 
-        /// <summary>
-        /// Version of this executable.
-        /// </summary>
-        public static string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
         static Updater()
         {
             ProductHeaderValue productInformation = new ProductHeaderValue("Lelebot");
