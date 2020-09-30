@@ -14,7 +14,6 @@ namespace Lelebot
 {
     public class Bot
     {
-        public bool CancellationRequested { get; private set; }
         public static IAudioClient AudioClient { get; set; }
         public DiscordSocketClient Client => client;
 
