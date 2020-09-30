@@ -48,7 +48,7 @@ namespace Lelebot.Commands
                         }
                         catch
                         {
-                            SendText(context, "Couldnt change the nick");
+                            SendText(context, "couldnt change the nick");
                         }
                     }
                 }

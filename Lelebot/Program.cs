@@ -16,6 +16,7 @@ namespace Lelebot
 
         public static async Task Main(string[] args)
         {
+            Updater.CleanArtifacts();
             Console.WriteLine("[main] starting");
             Console.WriteLine($"[main] version: {Info.Version}");
 

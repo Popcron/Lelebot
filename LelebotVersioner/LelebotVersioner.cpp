@@ -46,4 +46,7 @@ int main()
     logFile.open("Info.cs", fstream::app);
     logFile << dataString;
     logFile.close();
+
+    //print the new version
+    printf(to_string(version).c_str());
 }

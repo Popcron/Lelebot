@@ -7,7 +7,7 @@ namespace Lelebot
         /// <summary>
         /// The version of this bot based on the build count.
         /// </summary>
-        public const uint Version = 11;
+        public const uint Version = 14;
 
         public string token = "get your token (not client secret nor id) from https://discord.com/developers/applications";
         public ulong clientId = 419704867867852800;

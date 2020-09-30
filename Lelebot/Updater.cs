@@ -102,6 +102,9 @@ namespace Lelebot
             return false;
         }
 
+        /// <summary>
+        /// Clears old update files.
+        /// </summary>
         public static void CleanArtifacts()
         {
             string pathToExe = Assembly.GetEntryAssembly().Location;
@@ -117,6 +120,7 @@ namespace Lelebot
         /// </summary>
         public static async Task Update()
         {
+            CleanArtifacts();
             Console.WriteLine("[updater] thats it, im gonna update");
 
             //rename the currently running exe
@@ -131,7 +135,7 @@ namespace Lelebot
                 WebClient downloadClient = new WebClient();
                 foreach (ReleaseAsset asset in latestRelease.Assets)
                 {
-                    if (asset.Name == "Lelebot.exe")
+                    if (asset.Name.Equals("lelebot.exe", StringComparison.OrdinalIgnoreCase))
                     {
                         await downloadClient.DownloadFileTaskAsync(asset.BrowserDownloadUrl, pathToExe);
                         break;
