@@ -12,6 +12,11 @@ namespace Lelebot
     {
         private static GitHubClient client;
 
+        /// <summary>
+        /// Version of this executable.
+        /// </summary>
+        public static string Version => Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
         static Updater()
         {
             ProductHeaderValue productInformation = new ProductHeaderValue("Lelebot");
@@ -51,6 +56,8 @@ namespace Lelebot
             bool exists = await DoesRepositoryExist();
             if (exists)
             {
+                Branch branch = await client.Repository.Branch.Get("popcron", "lelebot", "master");
+
                 IReadOnlyList<Release> releases = await client.Repository.Release.GetAll("popcron", "lelebot");
                 Release latest = releases.OrderBy(x => x.CreatedAt).First();
                 Console.WriteLine($"[debug] latest release is {latest.Name}");
@@ -60,7 +67,7 @@ namespace Lelebot
         }
 
         /// <summary>
-        /// Downloads latest build.
+        /// Updates the bot, duh.
         /// </summary>
         public static void Update()
         {
