@@ -1,9 +1,8 @@
 ﻿using Octokit;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Lelebot
@@ -51,11 +50,9 @@ namespace Lelebot
             bool exists = await DoesRepositoryExist();
             if (exists)
             {
-                Branch branch = await client.Repository.Branch.Get("popcron", "lelebot", "master");
-
-                IReadOnlyList<Release> releases = await client.Repository.Release.GetAll("popcron", "lelebot");
-                Release latest = releases.OrderBy(x => x.CreatedAt).First();
-                Console.WriteLine($"[debug] latest release is {latest.Name}");
+                byte[] infoContent = await client.Repository.Content.GetRawContent("popcron", "lelebot", "Lelebot/Info.cs");
+                string info = Encoding.UTF8.GetString(infoContent);
+                Console.WriteLine(info);
             }
 
             return false;
