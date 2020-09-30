@@ -35,7 +35,7 @@ namespace Lelebot
             Initialize();
             stopwatch.Stop();
 
-            Console.WriteLine($"[bot] initialized bot in {stopwatch.ElapsedMilliseconds}ms");
+            Console.WriteLine($"[bot] initialized bot in {stopwatch.ElapsedMilliseconds/1000f:0.000}s");
         }
 
         private void LoadProcessors()
