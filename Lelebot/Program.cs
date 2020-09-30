@@ -7,6 +7,9 @@ namespace Lelebot
 {
     public class Program
     {
+        /// <summary>
+        /// The metadata info that this bot started with.
+        /// </summary>
         public static Info ProgramInfo { get; private set; } = null;
 
         private static Bot bot;
@@ -42,6 +45,7 @@ namespace Lelebot
             }
 
             //start the bot process
+            Console.WriteLine("[main] ok go");
             bot = new Bot(ProgramInfo);
             while (true)
             {
@@ -50,6 +54,9 @@ namespace Lelebot
             }
         }
 
+        /// <summary>
+        /// Ensures that the info json template exists.
+        /// </summary>
         private static void EnsureTemplateExists()
         {
             Info template = new Info();
@@ -59,6 +66,9 @@ namespace Lelebot
             File.WriteAllText(pathToTemplate, json);
         }
 
+        /// <summary>
+        /// Loads the info.json file into the bot.
+        /// </summary>
         private static Info Load()
         {
             EnsureTemplateExists();
@@ -75,13 +85,13 @@ namespace Lelebot
                 }
                 catch
                 {
-                    Console.WriteLine($"[program] couldnt parse {fileName} correctly");
+                    Console.WriteLine($"[main] couldnt parse {fileName} correctly");
                     return null;
                 }
             }
             else
             {
-                Console.WriteLine($"[program] {fileName} file not present beside the executable");
+                Console.WriteLine($"[main] {fileName} file not present beside the executable");
                 return null;
             }
         }

@@ -24,7 +24,7 @@ namespace Lelebot
         public Info Info { get; }
 
         private DiscordSocketClient client;
-        private List<Processor> processors = new List<Processor>();
+        private List<Processor> processors = null;
 
         public Bot(Info info)
         {
@@ -41,6 +41,13 @@ namespace Lelebot
 
         private void LoadProcessors()
         {
+            //have we aready loaded before?
+            if (processors != null)
+            {
+                return;
+            }
+
+            processors = new List<Processor>();
             string processorsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Processors");
             if (!Directory.Exists(processorsFolder))
             {
@@ -160,6 +167,9 @@ namespace Lelebot
 
         private async Task OnReady()
         {
+            //waiting another extra second on purpose
+            await Task.Delay(1000);
+
             Console.WriteLine("[bot] ready");
             LoadProcessors();
             await Task.CompletedTask;
@@ -192,7 +202,7 @@ namespace Lelebot
         /// <summary>
         /// Says a message in a voice channel.
         /// </summary>
-        public async Task Say(Context ctx, string text)
+        public async Task Speak(Context ctx, string text)
         {
             SocketGuildChannel guildChannel = ctx.Message.Channel as SocketGuildChannel;
             IGuild guild = guildChannel.Guild as IGuild;

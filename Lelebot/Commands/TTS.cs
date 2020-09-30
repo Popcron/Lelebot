@@ -24,7 +24,7 @@ namespace Lelebot.Commands
         public override async void Run(Context context)
         {
             string text = context.Text.Substring(4);
-            await Bot.Say(context, text);
+            await Bot.Speak(context, text);
         }
     }
 }
