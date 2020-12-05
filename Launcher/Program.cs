@@ -28,7 +28,13 @@ namespace Launcher
                     process.Start();
                     process.BeginErrorReadLine();
                     process.BeginOutputReadLine();
-                    process.WaitForExit();
+
+                    while (!process.HasExited)
+                    {
+                        process.StandardInput.WriteLine(Console.ReadLine());
+                    }
+
+                    Console.WriteLine("Started");
                 }
             }
             else
