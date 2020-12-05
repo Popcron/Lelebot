@@ -33,37 +33,37 @@ namespace Lelebot
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.Message);
+                Log.Error(e.Message);
             }
         }
 
         private Task OnReady()
         {
-            Console.WriteLine("Ready");
+            Log.DiscordEvent("Ready");
             return Task.CompletedTask;
         }
 
         private Task OnLoggedOut()
         {
-            Console.WriteLine("Logged Out");
+            Log.DiscordEvent("Logged Out");
             return Task.CompletedTask;
         }
 
         private Task OnDisconnected(Exception arg)
         {
-            Console.WriteLine("Disconnected");
+            Log.DiscordEvent("Disconnected");
             return Task.CompletedTask;
         }
 
         private Task OnConnected()
         {
-            Console.WriteLine("Connected");
+            Log.DiscordEvent("Connected");
             return Task.CompletedTask;
         }
 
         private Task OnLoggedIn()
         {
-            Console.WriteLine("Logged In");
+            Log.DiscordEvent("Logged In");
             return Task.CompletedTask;
         }
 
@@ -91,7 +91,7 @@ namespace Lelebot
                     {
                         if (call.Origin == Origin.Console)
                         {
-                            Console.WriteLine(message.Text);
+                            Log.User(message.Text);
                         }
                         else
                         {

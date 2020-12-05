@@ -24,7 +24,7 @@ namespace Lelebot
             }
             else
             {
-                Console.WriteLine("Path to info.json is expected as an argument");
+                Log.WriteLine("Path to info.json is expected as an argument");
             }
         }
     }

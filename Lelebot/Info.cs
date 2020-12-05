@@ -23,9 +23,7 @@ namespace Lelebot
                 }
                 catch (Exception e)
                 {
-                    string fileName = Path.GetFileName(pathToInfo);
-                    Console.WriteLine($"Error while reading {fileName}");
-                    Console.WriteLine(e.Message);
+                    Log.Error(e.Message);
                     return info;
                 }
             }
