@@ -15,6 +15,7 @@ namespace Lelebot.Commands
             if (call.RawText.Length > 4)
             {
                 string text = call.RawText.Substring(3);
+                Log.WriteLine(text);
                 try
                 {
                     Message message = new();
