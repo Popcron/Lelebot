@@ -19,7 +19,7 @@ namespace Launcher
                     Console.WriteLine(processInfo.RedirectStandardInput);
                     Console.WriteLine(processInfo.RedirectStandardError);
                     Console.WriteLine(processInfo.CreateNoWindow);
-                    Process.Start(processInfo);
+                    //Process.Start(processInfo);
                 }
             }
             else
