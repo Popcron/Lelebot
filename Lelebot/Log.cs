@@ -34,7 +34,7 @@ namespace Lelebot
         {
             ConsoleColor color = Console.ForegroundColor;
             Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine(obj);
+            Console.WriteLine($"> {obj}");
             Console.ForegroundColor = color;
         }
     }
