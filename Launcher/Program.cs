@@ -8,9 +8,10 @@ namespace Launcher
     {
         private static void Main(string[] args)
         {
-            if (args.Length == 1)
+            if (args.Length == 2)
             {
                 string pathToExecutable = args[0];
+                string pathToInfo = args[1];
                 if (File.Exists(pathToExecutable))
                 {
                     Process process = new();
@@ -18,7 +19,8 @@ namespace Launcher
                     {
                         RedirectStandardOutput = true,
                         RedirectStandardInput = true,
-                        RedirectStandardError = true
+                        RedirectStandardError = true,
+                        Arguments = pathToInfo
                     };
 
                     process.EnableRaisingEvents = true;
@@ -38,7 +40,7 @@ namespace Launcher
             }
             else
             {
-                Console.WriteLine("Missing argument for the bot executable path");
+                Console.WriteLine("Missing arguments for the bot executable path and info.json file");
             }
         }
 
