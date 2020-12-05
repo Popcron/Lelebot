@@ -1,15 +1,30 @@
-﻿using System;
+﻿using System.IO;
+using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Lelebot
 {
     public class Info
     {
-        public string token = "get your token (not client secret nor id) from https://discord.com/developers/applications";
-        public ulong clientId = 784807424543817768;
-        public string repoOwner = "repoOwner";
-        public string repoName = "repoName";
-        public string githubToken = "get your token from https://github.com/settings/tokens/new";
-        public string pathToVersionFile = "version.txt";
-        public DateTime version;
+        public ulong ClientID { get; private set; } = 0;
+        public string Token { get; private set; } = "token";
+
+        private Info()
+        {
+
+        }
+
+        public static async Task<Info> LoadFromFile()
+        {
+            string pathToDirectory = Program.PathToDirectory;
+            string pathToInfo = Path.Combine(pathToDirectory, "info.json");
+            if (File.Exists(pathToInfo))
+            {
+                using FileStream openStream = File.OpenRead(pathToInfo);
+                return await JsonSerializer.DeserializeAsync<Info>(openStream);
+            }
+
+            return new Info();
+        }
     }
 }

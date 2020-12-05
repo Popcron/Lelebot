@@ -1,88 +1,23 @@
 ﻿using System;
-using System.Text;
+using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
-    public class Help : Command
+    public class Help : ICommand
     {
-        public override string[] Names => new string[] { "help" };
-        public override string Description => "Prints out a list of the commands registered.";
-        public override bool TriggerTyping => true;
+        string ICommand.BaseCommand => "help";
 
-        public override bool Match(Context context)
+        Task ICommand.Run()
         {
-            if (context.Command.Equals("help", StringComparison.OrdinalIgnoreCase))
+            foreach (ICommand command in Library.Commands)
             {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public override void Run(Context context)
-        {
-            //build the text that contains all the info the show
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine("```");
-            foreach (Command command in GetCommands(context))
-            {
-                if (command.Names != null && command.Names?.Length > 0)
+                if (command is IHelp help)
                 {
-                    builder.Append(string.Join(", ", command.Names));
-                }
-                else
-                {
-                    builder.Append(command.GetType().FullName);
-                }
-
-                //add description text
-                if (!string.IsNullOrEmpty(command.Description))
-                {
-                    builder.Append(" = ");
-                    builder.Append(command.Description);
-                }
-
-                //add usage text
-                if (!string.IsNullOrEmpty(command.Usage))
-                {
-                    builder.AppendLine();
-                    builder.Append("    Usage: ");
-
-                    string[] lines = command.Usage.Split('\n');
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (i != 0)
-                        {
-                            builder.Append("    ");
-                        }
-
-                        builder.Append(lines[i]);
-                        builder.AppendLine();
-                    }
-                }
-
-                builder.AppendLine();
-            }
-            builder.Append("```");
-
-            //if the string builder is too long, then split it
-            int limit = 1000;
-            string text = builder.ToString();
-            int splits = (int)Math.Ceiling(text.Length / (float)limit);
-            for (int i = 0; i < splits; i++)
-            {
-                int start = i * limit;
-                if (i == splits - 1)
-                {
-                    SendText(context, text.Substring(start));
-                }
-                else
-                {
-                    SendText(context, text.Substring(start, limit));
+                    Console.WriteLine($"{command.BaseCommand} = {help.Help}");
                 }
             }
+
+            return Task.CompletedTask;
         }
     }
 }
