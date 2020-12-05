@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30709.64
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lelebot", "Lelebot\Lelebot.csproj", "{9DABBC10-B293-4FA6-BFD8-2FC84B5DD127}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{99BDCAEE-50EA-4723-B429-E1F43B7ADC67}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher.csproj", "{99BDCAEE-50EA-4723-B429-E1F43B7ADC67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
