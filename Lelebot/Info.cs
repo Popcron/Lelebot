@@ -9,25 +9,21 @@ namespace Lelebot
         public ulong ClientID { get; private set; } = 0;
         public string Token { get; private set; } = "token";
 
-        private Info()
-        {
-
-        }
-
         public static async Task<Info> LoadAtPath(string pathToInfo)
         {
+            Info info = new();
             if (File.Exists(pathToInfo))
             {
                 using FileStream openStream = File.OpenRead(pathToInfo);
-                return await JsonSerializer.DeserializeAsync<Info>(openStream);
+                return await JsonSerializer.DeserializeAsync<Info>(openStream,);
             }
             else
             {
-                string json = JsonSerializer.Serialize(new Info());
+                string json = JsonSerializer.Serialize(info);
                 File.WriteAllText(pathToInfo, json);
             }
 
-            return new Info();
+            return info;
         }
     }
 }
