@@ -19,6 +19,7 @@ namespace Launcher
                     processInfo.RedirectStandardError = true;
                     using (Process process = Process.Start(processInfo))
                     {
+                        process.StandardInput.WriteLine(Console.ReadLine());
                         Console.WriteLine(process.StandardOutput.ReadToEnd());
                         process.WaitForExit();
                     }
