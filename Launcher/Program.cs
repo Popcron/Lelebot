@@ -16,7 +16,6 @@ namespace Launcher
                     Process process = new();
                     process.StartInfo = new(pathToExecutable)
                     {
-                        UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardInput = true,
                         RedirectStandardError = true

@@ -23,6 +23,11 @@ namespace Lelebot
                 using FileStream openStream = File.OpenRead(pathToInfo);
                 return await JsonSerializer.DeserializeAsync<Info>(openStream);
             }
+            else
+            {
+                string json = JsonSerializer.Serialize(new Info());
+                File.WriteAllText(pathToInfo, json);
+            }
 
             return new Info();
         }

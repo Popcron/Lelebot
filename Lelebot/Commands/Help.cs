@@ -7,7 +7,7 @@ namespace Lelebot.Commands
     {
         string ICommand.BaseCommand => "help";
 
-        Task ICommand.Run()
+        Task ICommand.Run(params string[] args)
         {
             foreach (ICommand command in Library.Commands)
             {
