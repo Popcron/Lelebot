@@ -11,20 +11,17 @@ namespace Lelebot
 
         private static async Task Main(string[] args)
         {
+            Info info = new Info();
             if (args.Length == 1)
             {
-                string pathToInfo = args[0];
-                Info info = await Info.LoadAtPath(pathToInfo);
-                Bot bot = new(info);
-                while (true)
-                {
-                    string command = Console.ReadLine();
-                    await bot.RunTask(command);
-                }
+                info = await Info.LoadAtPath(args[0]);
             }
-            else
+
+            Bot bot = new(info);
+            while (true)
             {
-                Log.WriteLine("Path to info.json is expected as an argument");
+                string command = Console.ReadLine();
+                await bot.RunTask(command);
             }
         }
     }

@@ -1,5 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Lelebot
 {
@@ -32,7 +34,10 @@ namespace Lelebot
                 string[] args = new string[] { };
                 if (text.IndexOf(' ') != -1)
                 {
-                    args = text.Split(' ');
+                    List<string> listArgs = text.Split(' ').ToList();
+                    baseCommand = listArgs[0];
+                    listArgs.RemoveAt(0);
+                    args = listArgs.ToArray();
                 }
 
                 Call call = new(text, baseCommand, args);
