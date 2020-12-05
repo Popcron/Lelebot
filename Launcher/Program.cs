@@ -15,6 +15,10 @@ namespace Updater
                 {
                     Console.WriteLine("Exists ya");
                 }
+                else
+                {
+                    Console.WriteLine("Non existente");
+                }
             }
             else
             {
