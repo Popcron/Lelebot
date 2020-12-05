@@ -13,25 +13,38 @@ namespace Launcher
                 string pathToExecutable = args[0];
                 if (File.Exists(pathToExecutable))
                 {
-                    ProcessStartInfo processInfo = new ProcessStartInfo(pathToExecutable);
-                    processInfo.UseShellExecute = false;
-                    processInfo.RedirectStandardOutput = true;
-                    processInfo.RedirectStandardInput = true;
-                    processInfo.RedirectStandardError = true;
-                    using (Process process = Process.Start(processInfo))
+                    Process process = new Process();
+                    process.StartInfo = new(pathToExecutable)
                     {
-                        while (true)
-                        {
-                            Console.Write(process.StandardOutput.ReadToEnd());
-                            process.StandardInput.WriteLine(Console.ReadLine());
-                        }
-                    }
+                        UseShellExecute = false,
+                        RedirectStandardOutput = true,
+                        RedirectStandardInput = true,
+                        RedirectStandardError = true
+                    };
+
+                    process.EnableRaisingEvents = true;
+                    process.OutputDataReceived += OutputData;
+                    process.ErrorDataReceived += ErrorData;
+                    process.Start();
+                    process.BeginErrorReadLine();
+                    process.BeginOutputReadLine();
+                    process.WaitForExit();
                 }
             }
             else
             {
                 Console.WriteLine("Missing argument for the bot executable path");
             }
+        }
+
+        private static void ErrorData(object sender, DataReceivedEventArgs e)
+        {
+            Console.WriteLine(e.Data);
+        }
+
+        private static void OutputData(object sender, DataReceivedEventArgs e)
+        {
+            Console.WriteLine(e.Data + "\n");
         }
     }
 }
