@@ -13,7 +13,7 @@ namespace Launcher
                 string pathToExecutable = args[0];
                 if (File.Exists(pathToExecutable))
                 {
-                    Process process = new Process();
+                    Process process = new();
                     process.StartInfo = new(pathToExecutable)
                     {
                         UseShellExecute = false,
@@ -50,7 +50,7 @@ namespace Launcher
 
         private static void OutputData(object sender, DataReceivedEventArgs e)
         {
-            Console.WriteLine(e.Data + "\n");
+            Console.WriteLine(e.Data);
         }
     }
 }
