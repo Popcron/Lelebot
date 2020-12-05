@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -14,8 +15,18 @@ namespace Lelebot
             Info info = new();
             if (File.Exists(pathToInfo))
             {
-                using FileStream openStream = File.OpenRead(pathToInfo);
-                return await JsonSerializer.DeserializeAsync<Info>(openStream);
+                try
+                {
+                    using FileStream openStream = File.OpenRead(pathToInfo);
+                    return await JsonSerializer.DeserializeAsync<Info>(openStream);
+                }
+                catch (Exception e)
+                {
+                    string fileName = Path.GetFileName(pathToInfo);
+                    Console.WriteLine($"Error while reading {fileName}");
+                    Console.WriteLine(e.Message);
+                    return info;
+                }
             }
             else
             {
