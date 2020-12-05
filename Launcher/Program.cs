@@ -21,7 +21,7 @@ namespace Launcher
                     {
                         while (true)
                         {
-                            Console.WriteLine(process.StandardOutput.ReadToEnd());
+                            Console.WriteLine(process.StandardOutput.ReadLine());
                             process.StandardInput.WriteLine(Console.ReadLine());
                         }
                     }
