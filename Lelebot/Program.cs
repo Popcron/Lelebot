@@ -17,7 +17,7 @@ namespace Lelebot
                 Console.WriteLine($"Info = {pathToInfo}");
 
                 Info info = await Info.LoadAtPath(pathToInfo);
-                Bot bot = new Bot(info);
+                Bot bot = new(info);
                 while (true)
                 {
                     string command = Console.ReadLine();

@@ -18,12 +18,7 @@ namespace Lelebot
 
         private async void Initialize()
         {
-            DiscordSocketConfig config = new()
-            {
-                LogLevel = LogSeverity.Verbose
-            };
-
-            client = new DiscordSocketClient(config);
+            client = new DiscordSocketClient();
             client.Connected += Client_Connected;
             client.Disconnected += Client_Disconnected;
             client.LoggedIn += Client_LoggedIn;
@@ -33,6 +28,7 @@ namespace Lelebot
 
             try
             {
+                Console.WriteLine($"Token = {info.Token}");
                 await client.LoginAsync(TokenType.Bot, info.Token);
                 await client.StartAsync();
             }

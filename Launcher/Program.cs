@@ -10,8 +10,8 @@ namespace Launcher
         {
             if (args.Length == 2)
             {
-                string pathToExecutable = args[0];
-                string pathToInfo = args[1];
+                string pathToExecutable = Path.GetFullPath(args[0]);
+                string pathToInfo = Path.GetFullPath(args[1]);
                 if (File.Exists(pathToExecutable))
                 {
                     Console.WriteLine($"Executable = {pathToExecutable}");
