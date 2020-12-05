@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
-namespace Updater
+namespace Launcher
 {
     public class Program
     {
@@ -10,14 +11,10 @@ namespace Updater
             if (args.Length == 1)
             {
                 string pathToExecutable = args[0];
-                Console.WriteLine($"Path = {pathToExecutable}");
                 if (File.Exists(pathToExecutable))
                 {
-                    Console.WriteLine("Exists ya");
-                }
-                else
-                {
-                    Console.WriteLine("Non existente");
+                    ProcessStartInfo processInfo = new ProcessStartInfo(pathToExecutable);
+                    Process.Start(processInfo);
                 }
             }
             else
