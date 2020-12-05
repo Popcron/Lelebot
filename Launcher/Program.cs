@@ -19,21 +19,11 @@ namespace Launcher
                     processInfo.RedirectStandardError = true;
                     using (Process process = Process.Start(processInfo))
                     {
-                        do
+                        while (true)
                         {
-                            int output = process.StandardOutput.Read();
-                            char key = Convert.ToChar(output);
-                            if (key == Convert.ToChar(ConsoleKey.Enter))
-                            {
-                                Console.WriteLine();
-                                process.StandardInput.Write('\n');
-                            }
-                            else
-                            {
-                                process.StandardInput.Write(key);
-                            }
+                            Console.WriteLine(process.StandardOutput.ReadToEnd());
+                            process.StandardInput.WriteLine(Console.ReadLine());
                         }
-                        while (!process.HasExited);
                     }
                 }
             }
