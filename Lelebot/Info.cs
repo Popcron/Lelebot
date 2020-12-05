@@ -14,10 +14,8 @@ namespace Lelebot
 
         }
 
-        public static async Task<Info> LoadFromFile()
+        public static async Task<Info> LoadAtPath(string pathToInfo)
         {
-            string pathToDirectory = Program.PathToDirectory;
-            string pathToInfo = Path.Combine(pathToDirectory, "info.json");
             if (File.Exists(pathToInfo))
             {
                 using FileStream openStream = File.OpenRead(pathToInfo);
