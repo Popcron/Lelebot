@@ -7,8 +7,8 @@ namespace Lelebot
 {
     public class Info
     {
-        public ulong ClientID { get; private set; } = 0;
-        public string Token { get; private set; } = "token";
+        public ulong ClientID { get; set; } = 0;
+        public string Token { get; set; } = "token";
 
         public static async Task<Info> LoadAtPath(string pathToInfo)
         {
