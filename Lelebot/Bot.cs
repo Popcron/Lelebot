@@ -70,23 +70,17 @@ namespace Lelebot
         private async Task OnMessageReceived(SocketMessage discordMessage)
         {
             Call call = Parser.Build(discordMessage);
-            if (call is not null)
-            {
-                ICommand command = Library.Get(call.BaseCommand);
-                if (command is not null)
-                {
-                    Message message = await command.Run(call);
-                    if (message is not null)
-                    {
-                        Console.WriteLine(message.Text);
-                    }
-                }
-            }
+            await RunTask(call);
         }
 
         public async Task RunTask(string text)
         {
             Call call = Parser.Build(text);
+            await RunTask(call);
+        }
+
+        private async Task RunTask(Call call)
+        {
             if (call is not null)
             {
                 ICommand command = Library.Get(call.BaseCommand);
