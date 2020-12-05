@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using System;
 using System.Threading.Tasks;
 
 namespace Lelebot
@@ -30,8 +31,15 @@ namespace Lelebot
             client.Ready += Client_Ready;
             client.MessageReceived += OnMessageReceived;
 
-            await client.LoginAsync(TokenType.Bot, info.Token);
-            await client.StartAsync();
+            try
+            {
+                await client.LoginAsync(TokenType.Bot, info.Token);
+                await client.StartAsync();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private Task Client_Ready()
