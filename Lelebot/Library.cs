@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -9,7 +10,7 @@ namespace Lelebot
         /// <summary>
         /// Array of all command templates registered.
         /// </summary>
-        public static ICommand[] Commands { get; private set; }
+        public static List<ICommand> Commands { get; private set; }
 
         static Library()
         {
@@ -20,11 +21,15 @@ namespace Lelebot
         {
             Type baseType = typeof(ICommand);
             Assembly assembly = Assembly.GetExecutingAssembly();
-            Type[] types = assembly.GetTypes().Where(x => baseType.IsAssignableFrom(x) && x != baseType).ToArray();
-            Commands = new ICommand[types.Length];
-            for (int i = 0; i < types.Length; i++)
+            Type[] types = assembly.GetTypes().Where(x => baseType.IsAssignableFrom(x)).ToArray();
+            Commands = new List<ICommand>();
+            foreach (Type type in types)
             {
-                Commands[i] = Activator.CreateInstance(types[i]) as ICommand;
+                if (!type.IsAbstract && !type.IsInterface)
+                {
+                    ICommand command = Activator.CreateInstance(type) as ICommand;
+                    Commands.Add(command);
+                }
             }
         }
 
