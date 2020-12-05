@@ -83,7 +83,7 @@ namespace Lelebot
         {
             if (call is not null)
             {
-                ICommand command = Library.Get(call.BaseCommand);
+                ICommand command = Library.Get(call);
                 if (command is not null)
                 {
                     Message message = await command.Run(call);

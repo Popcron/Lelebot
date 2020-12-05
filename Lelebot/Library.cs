@@ -28,11 +28,11 @@ namespace Lelebot
             }
         }
 
-        public static ICommand Get(string baseCommand)
+        public static ICommand Get(Call call)
         {
             foreach (ICommand template in Commands)
             {
-                if (template.BaseCommand == baseCommand)
+                if (template.ShouldRun(call))
                 {
                     return Activator.CreateInstance(template.GetType()) as ICommand;
                 }

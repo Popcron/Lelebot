@@ -4,7 +4,7 @@ namespace Lelebot
 {
     public interface ICommand
     {
-        string BaseCommand { get; }
+        bool ShouldRun(Call call);
         Task<Message> Run(Call call);
     }
 }

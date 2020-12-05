@@ -24,18 +24,18 @@ namespace Lelebot
             return call;
         }
 
-        public static Call Build(string command)
+        public static Call Build(string text)
         {
-            if (!string.IsNullOrEmpty(command))
+            if (!string.IsNullOrEmpty(text))
             {
-                string baseCommand = command;
+                string baseCommand = text;
                 string[] args = new string[] { };
-                if (command.IndexOf(' ') != -1)
+                if (text.IndexOf(' ') != -1)
                 {
-                    args = command.Split(' ');
+                    args = text.Split(' ');
                 }
 
-                Call call = new(baseCommand, args);
+                Call call = new(text, baseCommand, args);
                 call.Origin = Origin.Console;
                 return call;
             }
