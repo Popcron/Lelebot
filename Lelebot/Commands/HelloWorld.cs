@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
@@ -8,10 +7,13 @@ namespace Lelebot.Commands
         string ICommand.BaseCommand => "test";
         string IHelp.Help => "Just prints Hello World as a test";
 
-        Task ICommand.Run(params string[] args)
+        async Task<Message> ICommand.Run(Call call)
         {
-            Console.WriteLine("Hello World");
-            return Task.CompletedTask;
+            Message message = new();
+            message.Append($"Hello World from {call.Origin}");
+
+            await Task.CompletedTask;
+            return message;
         }
     }
 }

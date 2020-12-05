@@ -67,22 +67,43 @@ namespace Lelebot
             return Task.CompletedTask;
         }
 
-        private async Task OnMessageReceived(SocketMessage arg)
+        private async Task OnMessageReceived(SocketMessage discordMessage)
         {
-            await RunTask(arg.Content);
+            Call call = Parser.Build(discordMessage);
+            if (call is not null)
+            {
+                ICommand command = Library.Get(call.BaseCommand);
+                if (command is not null)
+                {
+                    Message message = await command.Run(call);
+                    if (message is not null)
+                    {
+                        Console.WriteLine(message.Text);
+                    }
+                }
+            }
         }
-
-        public async void Run(string text) => await RunTask(text);
 
         public async Task RunTask(string text)
         {
-            Call? call = Parser.Build(text);
-            if (call != null)
+            Call call = Parser.Build(text);
+            if (call is not null)
             {
-                ICommand command = Library.Get(call.Value.BaseCommand);
-                if (command != null)
+                ICommand command = Library.Get(call.BaseCommand);
+                if (command is not null)
                 {
-                    await command.Run(call.Value.Args);
+                    Message message = await command.Run(call);
+                    if (message is not null)
+                    {
+                        if (call.Origin == Origin.Console)
+                        {
+                            Console.WriteLine(message.Text);
+                        }
+                        else
+                        {
+                            await call.DiscordMessage.Channel.SendMessageAsync(message.Text);
+                        }
+                    }
                 }
             }
         }

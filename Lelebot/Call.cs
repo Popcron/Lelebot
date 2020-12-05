@@ -1,9 +1,13 @@
-﻿namespace Lelebot
+﻿using Discord;
+
+namespace Lelebot
 {
-    public struct Call
+    public class Call
     {
         public string BaseCommand { get; }
         public string[] Args { get; }
+        public Origin Origin { get; set; }
+        public IMessage DiscordMessage { get; set; }
 
         public Call(string baseCommand, params string[] args)
         {
