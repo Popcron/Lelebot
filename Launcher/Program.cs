@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace Updater
 {
@@ -10,6 +11,10 @@ namespace Updater
             {
                 string pathToExecutable = args[0];
                 Console.WriteLine($"Path = {pathToExecutable}");
+                if (File.Exists(pathToExecutable))
+                {
+                    Console.WriteLine("Exists ya");
+                }
             }
             else
             {
