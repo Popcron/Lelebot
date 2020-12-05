@@ -14,6 +14,11 @@ namespace Launcher
                 if (File.Exists(pathToExecutable))
                 {
                     ProcessStartInfo processInfo = new ProcessStartInfo(pathToExecutable);
+                    Console.WriteLine(processInfo.UseShellExecute);
+                    Console.WriteLine(processInfo.RedirectStandardOutput);
+                    Console.WriteLine(processInfo.RedirectStandardInput);
+                    Console.WriteLine(processInfo.RedirectStandardError);
+                    Console.WriteLine(processInfo.CreateNoWindow);
                     Process.Start(processInfo);
                 }
             }
