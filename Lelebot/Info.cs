@@ -15,7 +15,7 @@ namespace Lelebot
             if (File.Exists(pathToInfo))
             {
                 using FileStream openStream = File.OpenRead(pathToInfo);
-                return await JsonSerializer.DeserializeAsync<Info>(openStream,);
+                return await JsonSerializer.DeserializeAsync<Info>(openStream);
             }
             else
             {
