@@ -18,7 +18,9 @@ namespace Lelebot
                 try
                 {
                     using FileStream openStream = File.OpenRead(pathToInfo);
-                    return await JsonSerializer.DeserializeAsync<Info>(openStream);
+                    info = await JsonSerializer.DeserializeAsync<Info>(openStream);
+                    Console.WriteLine("Loaded from file");
+                    return info;
                 }
                 catch (Exception e)
                 {
@@ -32,6 +34,7 @@ namespace Lelebot
             {
                 string json = JsonSerializer.Serialize(info);
                 File.WriteAllText(pathToInfo, json);
+                Console.WriteLine("Using defaults");
             }
 
             return info;
