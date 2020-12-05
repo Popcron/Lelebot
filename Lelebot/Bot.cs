@@ -19,16 +19,15 @@ namespace Lelebot
         private async void Initialize()
         {
             client = new DiscordSocketClient();
-            client.Connected += Client_Connected;
-            client.Disconnected += Client_Disconnected;
-            client.LoggedIn += Client_LoggedIn;
-            client.LoggedOut += Client_LoggedOut;
-            client.Ready += Client_Ready;
+            client.Connected += OnConnected;
+            client.Disconnected += OnDisconnected;
+            client.LoggedIn += OnLoggedIn;
+            client.LoggedOut += OnLoggedOut;
+            client.Ready += OnReady;
             client.MessageReceived += OnMessageReceived;
 
             try
             {
-                Console.WriteLine($"Token = {info.Token}");
                 await client.LoginAsync(TokenType.Bot, info.Token);
                 await client.StartAsync();
             }
@@ -38,28 +37,33 @@ namespace Lelebot
             }
         }
 
-        private Task Client_Ready()
+        private Task OnReady()
         {
+            Console.WriteLine("Ready");
             return Task.CompletedTask;
         }
 
-        private Task Client_LoggedOut()
+        private Task OnLoggedOut()
         {
+            Console.WriteLine("Logged Out");
             return Task.CompletedTask;
         }
 
-        private Task Client_Disconnected(System.Exception arg)
+        private Task OnDisconnected(Exception arg)
         {
+            Console.WriteLine("Disconnected");
             return Task.CompletedTask;
         }
 
-        private Task Client_Connected()
+        private Task OnConnected()
         {
+            Console.WriteLine("Connected");
             return Task.CompletedTask;
         }
 
-        private Task Client_LoggedIn()
+        private Task OnLoggedIn()
         {
+            Console.WriteLine("Logged In");
             return Task.CompletedTask;
         }
 

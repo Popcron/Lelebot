@@ -14,8 +14,6 @@ namespace Launcher
                 string pathToInfo = Path.GetFullPath(args[1]);
                 if (File.Exists(pathToExecutable))
                 {
-                    Console.WriteLine($"Executable = {pathToExecutable}");
-
                     Process process = new();
                     process.StartInfo = new(pathToExecutable)
                     {
@@ -36,8 +34,6 @@ namespace Launcher
                     {
                         process.StandardInput.WriteLine(Console.ReadLine());
                     }
-
-                    Console.WriteLine("Started");
                 }
             }
             else

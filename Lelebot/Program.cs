@@ -14,8 +14,6 @@ namespace Lelebot
             if (args.Length == 1)
             {
                 string pathToInfo = args[0];
-                Console.WriteLine($"Info = {pathToInfo}");
-
                 Info info = await Info.LoadAtPath(pathToInfo);
                 Bot bot = new(info);
                 while (true)
