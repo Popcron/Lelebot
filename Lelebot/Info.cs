@@ -4,13 +4,12 @@ namespace Lelebot
 {
     public class Info
     {
-        /// <summary>
-        /// The version of this bot based on the build count.
-        /// </summary>
-        public const uint Version = 14;
-
         public string token = "get your token (not client secret nor id) from https://discord.com/developers/applications";
-        public ulong clientId = 419704867867852800;
+        public ulong clientId = 784807424543817768;
+        public string repoOwner = "repoOwner";
+        public string repoName = "repoName";
+        public string githubToken = "get your token from https://github.com/settings/tokens/new";
+        public string pathToVersionFile = "version.txt";
         public DateTime version;
     }
 }

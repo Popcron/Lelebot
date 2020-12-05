@@ -35,7 +35,7 @@ namespace Lelebot
             Initialize();
             stopwatch.Stop();
 
-            Console.WriteLine($"[bot] initialized bot in {stopwatch.ElapsedMilliseconds/1000f:0.000}s");
+            Console.WriteLine($"[bot] initialized bot in {stopwatch.ElapsedMilliseconds / 1000f:0.000}s");
         }
 
         private void LoadProcessors()
@@ -265,8 +265,8 @@ namespace Lelebot
             }
 
             //try and invoke a command
-            Console.WriteLine(message);
-            if (TryGetContext(message.Content, out Context context))
+            Context context = GetContext(message.Content);
+            if (context != null)
             {
                 SocketGuildChannel textChannel = message.Channel as SocketGuildChannel;
                 SocketGuild guild = textChannel?.Guild;
@@ -276,10 +276,10 @@ namespace Lelebot
                 context.Channel = message.Channel;
                 context.Guild = guild;
 
-                if (Command.TryGet(context, out Command command))
+                Command command = Command.Create(context);
+                if (command != null)
                 {
                     command.Bot = this;
-
                     if (command.TriggerTyping)
                     {
                         await message.Channel.TriggerTypingAsync();
@@ -295,9 +295,11 @@ namespace Lelebot
         /// </summary>
         public void Run(string text)
         {
-            if (TryGetContext(text, out Context context))
+            Context context = GetContext(text);
+            if (context != null)
             {
-                if (Command.TryGet(context, out Command command))
+                Command command = Command.Create(context);
+                if (command != null)
                 {
                     command.Bot = this;
                     command.Run(context);
@@ -308,7 +310,7 @@ namespace Lelebot
         /// <summary>
         /// Tries to create a context element from a message.
         /// </summary>
-        private bool TryGetContext(string text, out Context context)
+        private Context GetContext(string text)
         {
             string originalText = text;
             if (!string.IsNullOrEmpty(text))
@@ -319,27 +321,34 @@ namespace Lelebot
                     string name = text.Substring(0, index);
                     text = text.Substring(index + 1);
 
-                    context = new Context
+                    return new Context
                     {
                         Command = name,
                         Text = originalText,
                         Args = Parser.CommandLineToArgs(text)
                     };
-                    return true;
                 }
                 else if (index == -1)
                 {
-                    context = new Context
+                    return new Context
                     {
                         Command = text,
                         Text = originalText
                     };
-                    return true;
                 }
             }
 
-            context = null;
-            return false;
+            return default;
+        }
+
+        public static bool IsOwnerOfThisBot(IUser user)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+
+            return user.Id == 587018784360103966 || user.Id == 169586130101075968;
         }
     }
 }

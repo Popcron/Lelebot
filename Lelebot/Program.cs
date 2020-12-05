@@ -10,19 +10,24 @@ namespace Lelebot
         /// <summary>
         /// The metadata info that this bot started with.
         /// </summary>
-        public static Info ProgramInfo { get; private set; } = null;
+        public static Info Info { get; private set; } = null;
 
         private static Bot bot;
+        private static Updater updater;
 
         public static async Task Main(string[] args)
         {
-            Updater.CleanArtifacts();
+            bool shouldUpdateSelf = false;
+            if (args.Length > 0)
+            {
+                Console.WriteLine(args[0]);
+            }
+
             Console.WriteLine("[main] starting");
-            Console.WriteLine($"[main] version: {Info.Version}");
 
             //load the info
-            ProgramInfo = Load();
-            if (ProgramInfo == null)
+            Info = Load();
+            if (Info == null)
             {
                 Console.WriteLine("[main] no program info found, press any key to close");
                 Console.ReadKey();
@@ -30,10 +35,11 @@ namespace Lelebot
             }
 
             //check for updates first
-            bool updateAvailable = await Updater.IsUpdateAvailable();
+            updater = new Updater(shouldUpdateSelf);
+            bool updateAvailable = await updater.IsUpdateAvailable();
             if (updateAvailable)
             {
-                await Updater.Update();
+                await updater.Update();
                 return;
             }
             else
@@ -43,7 +49,7 @@ namespace Lelebot
 
             //start the bot process
             Console.WriteLine("[main] ok go");
-            bot = new Bot(ProgramInfo);
+            bot = new Bot(Info);
             while (true)
             {
                 string command = Console.ReadLine();

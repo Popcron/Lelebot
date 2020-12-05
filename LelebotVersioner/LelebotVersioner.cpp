@@ -5,48 +5,71 @@
 
 using namespace std;
 
-int main()
+void incrementVersion();
+void deleteArtifacts();
+
+int main(int argc, char* argv[])
+{
+    if (argc == 2)
+    {
+        string arg = string(argv[1]);
+        if (arg == "--increment")
+        {
+            printf("incrementing version\n");
+            incrementVersion();
+        }
+        else if (arg == "--clean")
+        {
+            printf("cleaing folder\n");
+            deleteArtifacts();
+        }
+    }
+}
+
+void incrementVersion()
 {
     //read whole string in
-    string targetLine = "public const uint Version = ";
-    ifstream recordingFile("Info.cs");
+    ifstream versionFile("..\\version.txt");
     std::stringstream data;
-    data << recordingFile.rdbuf();
+    data << versionFile.rdbuf();
     string dataString = data.str();
 
-    //find the end of the line
-    int versionConstIndex = dataString.find(targetLine) + targetLine.length();
-    int semicolonIndex = versionConstIndex;
-    while (true)
-    {
-        if (dataString[semicolonIndex] == ';')
-        {
-            break;
-        }
-
-        semicolonIndex++;
-    }
-
     //get version number and increment it
-    string versionString = dataString.substr(versionConstIndex, semicolonIndex - versionConstIndex);
-    int version = stoi(versionString);
+    int version = stoi(dataString);
     version++;
 
     //write to the string
-    dataString.erase(versionConstIndex, versionString.length());
-    dataString.insert(versionConstIndex, to_string(version));
+    dataString = to_string(version);
 
     //clear the file
     ofstream ofs;
-    ofs.open("Info.cs", ofstream::out | ofstream::trunc);
+    ofs.open("..\\version.txt", ofstream::out | ofstream::trunc);
     ofs.close();
 
     //write the whole string back in
     fstream logFile;
-    logFile.open("Info.cs", fstream::app);
+    logFile.open("..\\version.txt", fstream::app);
     logFile << dataString;
     logFile.close();
+}
 
-    //print the new version
-    printf(to_string(version).c_str());
+void deleteArtifacts()
+{
+    string command = "cd ..";
+    system(command.c_str());
+
+    command = "del *.xml /s /q";
+    system(command.c_str());
+
+    command = "del *.iobj /s /q";
+    system(command.c_str());
+
+    command = "del *.pdb /s /q";
+    system(command.c_str());
+
+    command = "del *.ipdb /s /q";
+    system(command.c_str());
+
+    command = "del Lelebot.exe.config /s /q";
+    system(command.c_str());
 }

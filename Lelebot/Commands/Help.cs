@@ -26,7 +26,7 @@ namespace Lelebot.Commands
             //build the text that contains all the info the show
             StringBuilder builder = new StringBuilder();
             builder.AppendLine("```");
-            foreach (Command command in All)
+            foreach (Command command in GetCommands(context))
             {
                 if (command.Names != null && command.Names?.Length > 0)
                 {

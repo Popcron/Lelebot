@@ -9,50 +9,65 @@ namespace Lelebot
     {
         private static List<Command> all = null;
 
-        public static List<Command> All
+        static Command()
         {
-            get
+            all = new List<Command>();
+            Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (Assembly assembly in assemblies)
             {
-                if (all == null)
+                Type[] types = assembly.GetTypes();
+                foreach (Type type in types)
                 {
-                    all = new List<Command>();
-                    Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
-                    for (int a = 0; a < assemblies.Length; a++)
+                    if (!type.IsAbstract && typeof(Command).IsSubclassOf(type))
                     {
-                        Type[] types = assemblies[a].GetTypes();
-                        for (int t = 0; t < types.Length; t++)
-                        {
-                            if (types[t].IsSubclassOf(typeof(Command)))
-                            {
-                                Command command = (Command)Activator.CreateInstance(types[t]);
-                                all.Add(command);
-                            }
-                        }
+                        Command command = (Command)Activator.CreateInstance(type);
+                        all.Add(command);
                     }
                 }
+            }
+        }
 
-                return all;
+        public static IEnumerable<Command> GetCommands(Context context)
+        {
+            bool fromServerOwner = context?.Author.Id == 0;
+            bool fromConsoleWindow = context.Author == null;
+            bool fromBotOwner = Bot.IsOwnerOfThisBot(context.Author);
+
+            foreach (Command command in all)
+            {
+                if (command is IServerOwnerOnly && !fromServerOwner)
+                {
+                    continue;
+                }
+
+                if (command is IConsoleOnly && !fromConsoleWindow)
+                {
+                    continue;
+                }
+
+                if (command is IBotOwnerOnly && !fromBotOwner)
+                {
+                    continue;
+                }
+
+                yield return command;
             }
         }
 
         /// <summary>
         /// Returns a brand new instance of a command with this name if it exists.
         /// </summary>
-        public static bool TryGet(Context context, out Command command)
+        public static Command Create(Context context)
         {
-            List<Command> commands = All;
-            for (int i = 0; i < commands.Count; i++)
+            foreach (Command command in GetCommands(context))
             {
-                bool match = commands[i].Match(context);
-                if (match)
+                if (command.Match(context))
                 {
-                    command = (Command)Activator.CreateInstance(commands[i].GetType());
-                    return true;
+                    return (Command)Activator.CreateInstance(command.GetType());
                 }
             }
 
-            command = null;
-            return false;
+            return default;
         }
 
         public abstract bool TriggerTyping { get; }
@@ -70,12 +85,12 @@ namespace Lelebot
         /// <summary>
         /// What this commands does
         /// </summary>
-        public virtual string Description => "";
+        public virtual string Description => default;
 
         /// <summary>
         /// How to use this command, like an example.
         /// </summary>
-        public virtual string Usage => "";
+        public virtual string Usage => default;
 
         /// <summary>
         /// The bot that called this command.

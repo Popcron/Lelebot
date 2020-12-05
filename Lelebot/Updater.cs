@@ -13,25 +13,36 @@ namespace Lelebot
     {
         private static GitHubClient client;
 
-        static Updater()
+        private bool shouldUpdateSelf;
+
+        public Updater(bool shouldUpdateSelf)
         {
-            ProductHeaderValue productInformation = new ProductHeaderValue("Lelebot");
+            this.shouldUpdateSelf = shouldUpdateSelf;
+            ProductHeaderValue productInformation = new ProductHeaderValue("discord-lelebot");
             client = new GitHubClient(productInformation);
+            client.Credentials = new Credentials(Program.Info.githubToken, AuthenticationType.Bearer);
+            CleanArtifacts();
         }
 
-        public static async Task<bool> DoesRepositoryExist()
+        public async Task<bool> DoesRepositoryExist()
         {
             try
             {
                 //check if repo still exists
-                Repository repo = await client.Repository.Get("popcron", "lelebot");
-                return repo != null;
+                string owner = Program.Info.repoOwner;
+                string repo = Program.Info.repoName;
+                Console.WriteLine($"[updater] checking at https://github.com/{owner}/{repo}");
+                return (await client.Repository.Get(owner, repo)) != null;
             }
             catch (Exception exception)
             {
                 if (exception is NotFoundException)
                 {
                     Console.WriteLine("[updater] repo not found");
+                }
+                else if (exception is AuthorizationException)
+                {
+                    Console.WriteLine("[updater] bad credentials, check your token");
                 }
                 else
                 {
@@ -43,55 +54,54 @@ namespace Lelebot
         }
 
         /// <summary>
-        /// Get live version.
+        /// Returns the current version of the bot.
         /// </summary>
-        public static async Task<int> GetLiveVersion()
+        public int GetLocalVersion()
         {
-            byte[] infoContent = await client.Repository.Content.GetRawContent("popcron", "lelebot", "Lelebot/Info.cs");
-            string[] infoLines = Encoding.UTF8.GetString(infoContent).Split('\n');
-            string targetLine = "public const uint Version = ";
-            int versionNumber = -1;
-            foreach (string line in infoLines)
+            string dir = AppDomain.CurrentDomain.BaseDirectory;
+            string versionFile = Path.Combine(dir, Program.Info.pathToVersionFile);
+            if (File.Exists(versionFile))
             {
-                int versionConstantIndex = line.IndexOf(targetLine);
-                if (versionConstantIndex != -1)
-                {
-                    string versionText = line.Substring(versionConstantIndex + targetLine.Length);
-                    versionText = versionText.TrimStart(' ');
-                    versionText = versionText.TrimEnd(' ');
-                    versionText = versionText.TrimEnd(';');
-
-                    versionNumber = int.Parse(versionText);
-                    break;
-                }
+                string text = File.ReadAllText(versionFile);
+                return int.Parse(text);
             }
 
-            return versionNumber;
+            return -1;
+        }
+
+        /// <summary>
+        /// Gets the version that is on the remote website.
+        /// </summary>
+        public async Task<int> GetLiveVersion()
+        {
+            string owner = Program.Info.repoOwner;
+            string repo = Program.Info.repoName;
+            string pathToVersionFile = Program.Info.pathToVersionFile;
+            byte[] infoContent = await client.Repository.Content.GetRawContent(owner, repo, pathToVersionFile);
+            string[] infoLines = Encoding.UTF8.GetString(infoContent).Split('\n');
+            return int.Parse(infoLines[0]);
         }
 
         /// <summary>
         /// Checks for an update by polling the github repo.
         /// </summary>
-        public static async Task<bool> IsUpdateAvailable()
+        public async Task<bool> IsUpdateAvailable()
         {
+            if (!shouldUpdateSelf)
+            {
+                return false;
+            }
+
             Console.WriteLine("[updater] checking for updates");
 
             bool exists = await DoesRepositoryExist();
             if (exists)
             {
-                Release latestRelease = await client.Repository.Release.GetLatest("popcron", "lelebot");
-                if (latestRelease != null)
+                int localVersion = GetLocalVersion();
+                int liveVersion = await GetLiveVersion();
+                if (localVersion < liveVersion)
                 {
-                    string releaseName = latestRelease.Name;
-                    if (releaseName.IndexOf(" ") != -1)
-                    {
-                        string versionNumberText = releaseName.Split(' ')[1];
-                        if (int.TryParse(versionNumberText, out int versionNumber))
-                        {
-                            Console.WriteLine($"[updater] latest available version is {versionNumber}");
-                            return versionNumber > Info.Version;
-                        }
-                    }
+                    return true;
                 }
             }
             else
@@ -105,7 +115,7 @@ namespace Lelebot
         /// <summary>
         /// Clears old update files.
         /// </summary>
-        public static void CleanArtifacts()
+        public void CleanArtifacts()
         {
             string pathToExe = Assembly.GetEntryAssembly().Location;
             string oldPath = pathToExe.Replace(".exe", ".exe.old");
@@ -118,7 +128,7 @@ namespace Lelebot
         /// <summary>
         /// Updates the bot, duh.
         /// </summary>
-        public static async Task Update()
+        public async Task Update()
         {
             CleanArtifacts();
             Console.WriteLine("[updater] thats it, im gonna update");
@@ -129,7 +139,9 @@ namespace Lelebot
             File.Move(pathToExe, newPath);
 
             //download the exe from the repo
-            Release latestRelease = await client.Repository.Release.GetLatest("popcron", "lelebot");
+            string owner = Program.Info.repoOwner;
+            string repo = Program.Info.repoName;
+            Release latestRelease = await client.Repository.Release.GetLatest(owner, repo);
             if (latestRelease != null)
             {
                 WebClient downloadClient = new WebClient();
