@@ -2,18 +2,18 @@
 
 namespace Lelebot.Commands
 {
-    public class Help : ICommand
+    public class Help : IBaseCommand
     {
-        string ICommand.BaseCommand => "help";
+        string IBaseCommand.BaseCommand => "help";
 
         async Task<Message> ICommand.Run(Call call)
         {
             Message message = new();
             foreach (ICommand command in Library.Commands)
             {
-                if (command is IHelp help)
+                if (command is IHelp help && command is IBaseCommand baseCommand)
                 {
-                    message.Append(command.BaseCommand);
+                    message.Append(baseCommand.BaseCommand);
                     message.Append(" = ");
                     message.Append(help.Help);
                     message.AppendLine();
