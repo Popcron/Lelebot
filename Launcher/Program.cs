@@ -14,6 +14,7 @@ namespace Launcher
                 if (File.Exists(pathToExecutable))
                 {
                     ProcessStartInfo processInfo = new ProcessStartInfo(pathToExecutable);
+                    processInfo.UseShellExecute = false;
                     processInfo.RedirectStandardOutput = true;
                     processInfo.RedirectStandardInput = true;
                     processInfo.RedirectStandardError = true;
@@ -21,7 +22,7 @@ namespace Launcher
                     {
                         while (true)
                         {
-                            Console.WriteLine(process.StandardOutput.ReadLine());
+                            Console.Write(process.StandardOutput.ReadToEnd());
                             process.StandardInput.WriteLine(Console.ReadLine());
                         }
                     }
