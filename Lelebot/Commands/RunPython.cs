@@ -1,5 +1,6 @@
 ﻿using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
+using System;
 using System.Threading.Tasks;
 
 namespace Lelebot.Commands
@@ -15,19 +16,19 @@ namespace Lelebot.Commands
             if (call.RawText.Length > 4)
             {
                 string text = call.RawText.Substring(3);
-                Log.WriteLine(text);
+                Message message = new();
                 try
                 {
-                    Message message = new();
                     ScriptEngine pythonEngine = Python.CreateEngine();
                     ScriptSource pythonScript = pythonEngine.CreateScriptSourceFromString(text);
-                    message.Append(pythonScript.Execute());
-                    return message;
+                    message.Append((object)pythonScript.Execute());
                 }
-                catch
+                catch (Exception e)
                 {
-                    return null;
+                    message.Append(e.Message);
                 }
+
+                return message;
             }
 
             return null;
