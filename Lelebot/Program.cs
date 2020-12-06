@@ -11,7 +11,7 @@ namespace Lelebot
 
         private static async Task Main(string[] args)
         {
-            Info info = new Info();
+            Info info = new();
             if (args.Length == 1)
             {
                 info = await Info.LoadAtPath(args[0]);

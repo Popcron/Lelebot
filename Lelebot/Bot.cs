@@ -89,7 +89,6 @@ namespace Lelebot
                     Message message = await command.Run(call);
                     if (message is not null)
                     {
-                        Console.WriteLine($"[debug] {call.Origin}");
                         if (call.Origin == Origin.Console)
                         {
                             Log.User(message.Text);

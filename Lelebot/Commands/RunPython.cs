@@ -1,6 +1,7 @@
 ﻿using IronPython.Hosting;
 using Microsoft.Scripting.Hosting;
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Lelebot.Commands
@@ -19,9 +20,15 @@ namespace Lelebot.Commands
                 Message message = new();
                 try
                 {
+                    MemoryStream memoryStream = new();
                     ScriptEngine pythonEngine = Python.CreateEngine();
+                    pythonEngine.Runtime.IO.RedirectToConsole();
+
                     ScriptSource pythonScript = pythonEngine.CreateScriptSourceFromString(text);
-                    message.Append((object)pythonScript.Execute());
+                    pythonScript.Execute();
+
+                    StreamReader reader = new(memoryStream);
+                    message.Append(reader.ReadToEnd());
                 }
                 catch (Exception e)
                 {
