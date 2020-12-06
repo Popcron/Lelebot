@@ -20,15 +20,18 @@ namespace Lelebot.Commands
                 Message message = new();
                 try
                 {
-                    MemoryStream memoryStream = new();
+                    TextWriter lastOut = Console.Out;
                     ScriptEngine pythonEngine = Python.CreateEngine();
                     pythonEngine.Runtime.IO.RedirectToConsole();
+
+                    StringWriter output = new();
+                    Console.SetOut(output);
 
                     ScriptSource pythonScript = pythonEngine.CreateScriptSourceFromString(text);
                     pythonScript.Execute();
 
-                    StreamReader reader = new(memoryStream);
-                    message.Append(reader.ReadToEnd());
+                    message.Append(output.GetStringBuilder().ToString());
+                    Console.SetOut(lastOut);
                 }
                 catch (Exception e)
                 {
