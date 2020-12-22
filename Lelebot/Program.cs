@@ -24,8 +24,6 @@ namespace Lelebot
             while (true)
             {
                 string command = Console.ReadLine();
-                (int left, int top) = Console.GetCursorPosition();
-                Console.SetCursorPosition(0, top - 1);
                 Log.User(command);
 
                 await bot.RunTask(command);
