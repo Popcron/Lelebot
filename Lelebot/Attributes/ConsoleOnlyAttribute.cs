@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Lelebot
+﻿namespace Lelebot
 {
-    public class ConsoleOnlyAttribute : Attribute
+    public class ConsoleOnlyAttribute : ExecutionFilterAttribute
     {
 
     }

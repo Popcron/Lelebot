@@ -2,7 +2,7 @@
 
 namespace Lelebot.Commands
 {
-    [ConsoleOnly]
+    [ConsoleOnly, PrivateDMOnly]
     public class HelloWorld : IBasicCommand, IHelp
     {
         string IBasicCommand.Name => "test";

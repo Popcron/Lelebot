@@ -2,7 +2,7 @@
 
 namespace Lelebot
 {
-    public class PrivateDMOnlyAttribute : Attribute
+    public class PrivateDMOnlyAttribute : ExecutionFilterAttribute
     {
 
     }

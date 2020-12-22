@@ -2,7 +2,7 @@
 
 namespace Lelebot
 {
-    public class BotOwnerOnlyAttribute : Attribute
+    public class BotOwnerOnlyAttribute : ExecutionFilterAttribute
     {
 
     }

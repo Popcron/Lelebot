@@ -40,47 +40,51 @@ namespace Lelebot
             foreach (ICommand template in AllCommands)
             {
                 Type type = template.GetType();
-                IEnumerable<Attribute> attributes = type.GetCustomAttributes();
                 bool allowed = true;
-                foreach (Attribute attribute in attributes)
+                List<ExecutionFilterAttribute> attributes = type.GetCustomAttributes<ExecutionFilterAttribute>().ToList();
+                if (attributes.Count > 0)
                 {
-                    if (attribute is ConsoleOnlyAttribute)
+                    allowed = false;
+                    foreach (Attribute attribute in attributes)
                     {
-                        if (call.Origin != MessageOrigin.Console)
+                        if (attribute is ConsoleOnlyAttribute)
                         {
-                            allowed = false;
-                            break;
-                        }
-                    }
-                    else if (attribute is BotOwnerOnlyAttribute)
-                    {
-                        if (call.DiscordMessage?.Author?.Id == Info.BotOwner)
-                        {
-                            allowed = false;
-                            break;
-                        }
-                    }
-                    else if (attribute is ServerOwnerOnlyAttribute)
-                    {
-                        if (call.DiscordMessage?.Channel is ITextChannel textChannel)
-                        {
-                            if (textChannel.Guild.OwnerId == call.DiscordMessage.Author.Id)
+                            if (call.Origin == MessageOrigin.Console)
                             {
-                                allowed = false;
+                                allowed = true;
+                                break;
+                            }
+                        }
+                        else if (attribute is BotOwnerOnlyAttribute)
+                        {
+                            if (call.DiscordMessage?.Author?.Id == Info.BotOwner)
+                            {
+                                allowed = true;
+                                break;
+                            }
+                        }
+                        else if (attribute is ServerOwnerOnlyAttribute)
+                        {
+                            if (call.DiscordMessage?.Channel is ITextChannel textChannel)
+                            {
+                                if (textChannel.Guild.OwnerId == call.DiscordMessage.Author.Id)
+                                {
+                                    allowed = true;
+                                    break;
+                                }
+                            }
+                        }
+                        else if (attribute is PrivateDMOnlyAttribute)
+                        {
+                            if (call.DiscordMessage?.Channel is IPrivateChannel)
+                            {
+                                allowed = true;
                                 break;
                             }
                         }
                     }
-                    else if (attribute is PrivateDMOnlyAttribute)
-                    {
-                        if (call.DiscordMessage?.Channel is IPrivateChannel)
-                        {
-                            allowed = false;
-                            break;
-                        }
-                    }
                 }
-
+                
                 if (allowed)
                 {
                     commands.Add(template);
