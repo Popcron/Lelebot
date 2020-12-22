@@ -2,9 +2,10 @@
 
 namespace Lelebot.Commands
 {
-    public class HelloWorld : IBaseCommand, IHelp
+    [ConsoleOnly]
+    public class HelloWorld : IBasicCommand, IHelp
     {
-        string IBaseCommand.BaseCommand => "test";
+        string IBasicCommand.Name => "test";
         string IHelp.Help => "Just prints Hello World as a test";
 
         async Task<Message> ICommand.Run(Call call)

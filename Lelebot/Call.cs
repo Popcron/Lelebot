@@ -7,7 +7,7 @@ namespace Lelebot
         public string BaseCommand { get; }
         public string[] Args { get; }
         public string RawText { get; }
-        public Origin Origin { get; set; }
+        public MessageOrigin Origin { get; set; }
         public IMessage DiscordMessage { get; set; }
 
         public Call(string rawText, string baseCommand, params string[] args)

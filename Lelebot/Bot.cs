@@ -7,12 +7,10 @@ namespace Lelebot
 {
     public class Bot
     {
-        private Info info;
         private DiscordSocketClient client;
 
-        public Bot(Info info)
+        public Bot()
         {
-            this.info = info;
             Initialize();
         }
 
@@ -28,7 +26,7 @@ namespace Lelebot
 
             try
             {
-                await client.LoginAsync(TokenType.Bot, info.Token);
+                await client.LoginAsync(TokenType.Bot, Info.Token);
                 await client.StartAsync();
             }
             catch (Exception e)
@@ -86,17 +84,24 @@ namespace Lelebot
                 ICommand command = Library.Get(call);
                 if (command is not null)
                 {
-                    Message message = await command.Run(call);
-                    if (message is not null)
+                    try
                     {
-                        if (call.Origin == Origin.Console)
+                        Message message = await command.Run(call);
+                        if (message is not null)
                         {
-                            Log.User(message.Text);
+                            if (call.Origin == MessageOrigin.Console)
+                            {
+                                Log.CommandResult(message.Text);
+                            }
+                            else
+                            {
+                                await call.DiscordMessage.Channel.SendMessageAsync(message.Text);
+                            }
                         }
-                        else
-                        {
-                            await call.DiscordMessage.Channel.SendMessageAsync(message.Text);
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex);
                     }
                 }
             }

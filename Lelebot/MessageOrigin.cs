@@ -1,6 +1,6 @@
 ﻿namespace Lelebot
 {
-    public enum Origin
+    public enum MessageOrigin
     {
         Console,
         PrivateDM,

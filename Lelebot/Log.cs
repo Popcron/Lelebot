@@ -37,5 +37,13 @@ namespace Lelebot
             Console.WriteLine($"> {obj}");
             Console.ForegroundColor = color;
         }
+
+        public static void CommandResult(object obj)
+        {
+            ConsoleColor color = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(obj);
+            Console.ForegroundColor = color;
+        }
     }
 }

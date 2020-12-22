@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Discord;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,7 +11,7 @@ namespace Lelebot
         /// <summary>
         /// Array of all command templates registered.
         /// </summary>
-        public static List<ICommand> Commands { get; private set; }
+        public static List<ICommand> AllCommands { get; private set; }
 
         static Library()
         {
@@ -22,24 +23,82 @@ namespace Lelebot
             Type baseType = typeof(ICommand);
             Assembly assembly = Assembly.GetExecutingAssembly();
             Type[] types = assembly.GetTypes().Where(x => baseType.IsAssignableFrom(x)).ToArray();
-            Commands = new List<ICommand>();
+            AllCommands = new List<ICommand>();
             foreach (Type type in types)
             {
                 if (!type.IsAbstract && !type.IsInterface)
                 {
                     ICommand command = Activator.CreateInstance(type) as ICommand;
-                    Commands.Add(command);
+                    AllCommands.Add(command);
                 }
             }
         }
 
+        public static List<ICommand> GetCommands(Call call)
+        {
+            List<ICommand> commands = new List<ICommand>();
+            foreach (ICommand template in AllCommands)
+            {
+                Type type = template.GetType();
+                IEnumerable<Attribute> attributes = type.GetCustomAttributes();
+                bool allowed = true;
+                foreach (Attribute attribute in attributes)
+                {
+                    if (attribute is ConsoleOnlyAttribute)
+                    {
+                        if (call.Origin != MessageOrigin.Console)
+                        {
+                            allowed = false;
+                            break;
+                        }
+                    }
+                    else if (attribute is BotOwnerOnlyAttribute)
+                    {
+                        if (call.DiscordMessage?.Author?.Id == Info.BotOwner)
+                        {
+                            allowed = false;
+                            break;
+                        }
+                    }
+                    else if (attribute is ServerOwnerOnlyAttribute)
+                    {
+                        if (call.DiscordMessage?.Channel is ITextChannel textChannel)
+                        {
+                            if (textChannel.Guild.OwnerId == call.DiscordMessage.Author.Id)
+                            {
+                                allowed = false;
+                                break;
+                            }
+                        }
+                    }
+                    else if (attribute is PrivateDMOnlyAttribute)
+                    {
+                        if (call.DiscordMessage?.Channel is IPrivateChannel)
+                        {
+                            allowed = false;
+                            break;
+                        }
+                    }
+                }
+
+                if (allowed)
+                {
+                    commands.Add(template);
+                }
+            }
+
+            return commands;
+        }
+
         public static ICommand Get(Call call)
         {
-            foreach (ICommand template in Commands)
+            List<ICommand> commands = GetCommands(call);
+            foreach (ICommand template in commands)
             {
                 if (template.ShouldRun(call))
                 {
-                    return Activator.CreateInstance(template.GetType()) as ICommand;
+                    Type type = template.GetType();
+                    return Activator.CreateInstance(type) as ICommand;
                 }
             }
 

@@ -11,16 +11,23 @@ namespace Lelebot
 
         private static async Task Main(string[] args)
         {
-            Info info = new();
             if (args.Length == 1)
             {
-                info = await Info.LoadAtPath(args[0]);
+                await Info.LoadAtPath(args[0]);
+            }
+            else
+            {
+                await Info.LoadAtPath(null);
             }
 
-            Bot bot = new(info);
+            Bot bot = new();
             while (true)
             {
                 string command = Console.ReadLine();
+                (int left, int top) = Console.GetCursorPosition();
+                Console.SetCursorPosition(0, top - 1);
+                Log.User(command);
+
                 await bot.RunTask(command);
             }
         }

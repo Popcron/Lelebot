@@ -7,33 +7,39 @@ namespace Lelebot
 {
     public class Info
     {
-        public ulong ClientID { get; set; } = 0;
-        public string Token { get; set; } = "token";
+        private static Info info;
 
-        public static async Task<Info> LoadAtPath(string pathToInfo)
+        public const ulong BotOwner = 587018784360103966;
+        public static ulong ClientID => info.clientId;
+        public static string Token => info.token;
+
+        public ulong clientId = 0;
+        public string token = "token";
+
+        public static async Task LoadAtPath(string pathToInfo)
         {
-            Info info = new();
-            if (File.Exists(pathToInfo))
+            info = new();
+            if (!string.IsNullOrEmpty(pathToInfo))
             {
-                try
+                JsonSerializerOptions options = new JsonSerializerOptions();
+                options.IncludeFields = true;
+                if (File.Exists(pathToInfo))
                 {
-                    using FileStream openStream = File.OpenRead(pathToInfo);
-                    info = await JsonSerializer.DeserializeAsync<Info>(openStream);
-                    return info;
+                    try
+                    {
+                        using FileStream openStream = File.OpenRead(pathToInfo);
+                        info = await JsonSerializer.DeserializeAsync<Info>(openStream, options);
+                        return;
+                    }
+                    catch (Exception e)
+                    {
+                        Log.Error(e.Message);
+                    }
                 }
-                catch (Exception e)
-                {
-                    Log.Error(e.Message);
-                    return info;
-                }
-            }
-            else
-            {
-                string json = JsonSerializer.Serialize(info);
+
+                string json = JsonSerializer.Serialize(info, options);
                 File.WriteAllText(pathToInfo, json);
             }
-
-            return info;
         }
     }
 }

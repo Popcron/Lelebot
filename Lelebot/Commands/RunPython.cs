@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
-    public class RunPython : IBaseCommand, IHelp
+    public class RunPython : IBasicCommand, IHelp
     {
         string IHelp.Help => "Executes a line of python code";
-        string IBaseCommand.BaseCommand => "py";
+        string IBasicCommand.Name => "py";
 
         async Task<Message> ICommand.Run(Call call)
         {

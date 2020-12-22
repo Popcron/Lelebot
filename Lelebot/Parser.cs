@@ -15,11 +15,11 @@ namespace Lelebot
                 call.DiscordMessage = message;
                 if (socketMessage.Channel is IGuildChannel)
                 {
-                    call.Origin = Origin.Server;
+                    call.Origin = MessageOrigin.Server;
                 }
                 else
                 {
-                    call.Origin = Origin.PrivateDM;
+                    call.Origin = MessageOrigin.PrivateDM;
                 }
             }
 
@@ -35,13 +35,16 @@ namespace Lelebot
                 if (text.IndexOf(' ') != -1)
                 {
                     List<string> listArgs = text.Split(' ').ToList();
-                    baseCommand = listArgs[0];
-                    listArgs.RemoveAt(0);
-                    args = listArgs.ToArray();
+                    if (listArgs.Count > 1)
+                    {
+                        baseCommand = listArgs[0];
+                        listArgs.RemoveAt(0);
+                        args = listArgs.ToArray();
+                    }
                 }
 
                 Call call = new(text, baseCommand, args);
-                call.Origin = Origin.Console;
+                call.Origin = MessageOrigin.Console;
                 return call;
             }
 
