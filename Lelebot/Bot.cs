@@ -67,8 +67,11 @@ namespace Lelebot
 
         private async Task OnMessageReceived(SocketMessage discordMessage)
         {
-            Call call = Parser.Build(discordMessage);
-            await RunTask(call);
+            if (discordMessage.Author.Id != Info.ClientID)
+            {
+                Call call = Parser.Build(discordMessage);
+                await RunTask(call);
+            }
         }
 
         public async Task RunTask(string text)
