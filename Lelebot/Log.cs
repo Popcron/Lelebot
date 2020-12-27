@@ -50,14 +50,14 @@ namespace Lelebot
 
         private static void Flush()
         {
-            File.AppendAllText(pathToLogFile, logWriter.ToString());
+            File.WriteAllText(pathToLogFile, logWriter.ToString());
         }
 
         private static void LogToFile(string category, object obj)
         {
             TimeSpan time = DateTime.UtcNow - startTime;
             string stringTime = ((int)time.TotalSeconds).ToString();
-            string prefix = $"{stringTime,-7} {category,4}";
+            string prefix = $"{stringTime,-7}{category,4}";
             string line = $"[{prefix}] {obj}";
             logWriter.AppendLine(line);
             dirty = true;
