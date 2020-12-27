@@ -70,6 +70,7 @@ namespace Lelebot
             if (discordMessage.Author.Id != Info.ClientID)
             {
                 Call call = Parser.Build(discordMessage);
+                Log.User(discordMessage.Author.Username, discordMessage.Content);
                 await RunTask(call);
             }
         }
