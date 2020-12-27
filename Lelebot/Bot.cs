@@ -7,27 +7,34 @@ namespace Lelebot
 {
     public class Bot
     {
-        private DiscordSocketClient client;
+        public DiscordSocketClient Client { get; }
 
         public Bot()
         {
+            Client = new DiscordSocketClient();
+            Client.Connected += OnConnected;
+            Client.Disconnected += OnDisconnected;
+            Client.LoggedIn += OnLoggedIn;
+            Client.LoggedOut += OnLoggedOut;
+            Client.Ready += OnReady;
+            Client.MessageReceived += OnMessageReceived;
+
             Initialize();
         }
 
         private async void Initialize()
         {
-            client = new DiscordSocketClient();
-            client.Connected += OnConnected;
-            client.Disconnected += OnDisconnected;
-            client.LoggedIn += OnLoggedIn;
-            client.LoggedOut += OnLoggedOut;
-            client.Ready += OnReady;
-            client.MessageReceived += OnMessageReceived;
+            Log.DiscordEvent("Initialize");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnInitialized(this);
+            }
 
             try
             {
-                await client.LoginAsync(TokenType.Bot, Info.Token);
-                await client.StartAsync();
+                await Client.LoginAsync(TokenType.Bot, Info.Token);
+                await Client.StartAsync();
             }
             catch (Exception e)
             {
@@ -38,30 +45,60 @@ namespace Lelebot
         private Task OnReady()
         {
             Log.DiscordEvent("Ready");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnReady();
+            }
+
             return Task.CompletedTask;
         }
 
         private Task OnLoggedOut()
         {
             Log.DiscordEvent("Logged Out");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnLoggedOut();
+            }
+
             return Task.CompletedTask;
         }
 
-        private Task OnDisconnected(Exception arg)
+        private Task OnDisconnected(Exception exception)
         {
             Log.DiscordEvent("Disconnected");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnDisconnected(exception);
+            }
+
             return Task.CompletedTask;
         }
 
         private Task OnConnected()
         {
             Log.DiscordEvent("Connected");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnConnected();
+            }
+
             return Task.CompletedTask;
         }
 
         private Task OnLoggedIn()
         {
             Log.DiscordEvent("Logged In");
+
+            foreach (IProcessor processor in Library.AllProcessors)
+            {
+                processor.OnLoggedIn();
+            }
+
             return Task.CompletedTask;
         }
 
@@ -71,6 +108,12 @@ namespace Lelebot
             {
                 Call call = Parser.Build(discordMessage);
                 Log.User(discordMessage.Author.Username, discordMessage.Content);
+
+                foreach (IProcessor processor in Library.AllProcessors)
+                {
+                    processor.OnMessageReceived(discordMessage, call);
+                }
+
                 await RunTask(call);
             }
         }

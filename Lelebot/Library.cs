@@ -13,9 +13,31 @@ namespace Lelebot
         /// </summary>
         public static List<ICommand> AllCommands { get; private set; }
 
+        /// <summary>
+        /// List of all processor instances registered.
+        /// </summary>
+        public static List<IProcessor> AllProcessors { get; private set; }
+
         static Library()
         {
             FindAllCommands();
+            FindAllProcessors();
+        }
+
+        private static void FindAllProcessors()
+        {
+            Type baseType = typeof(IProcessor);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            Type[] types = assembly.GetTypes().Where(x => baseType.IsAssignableFrom(x)).ToArray();
+            AllProcessors = new List<IProcessor>();
+            foreach (Type type in types)
+            {
+                if (!type.IsAbstract && !type.IsInterface)
+                {
+                    IProcessor processor = Activator.CreateInstance(type) as IProcessor;
+                    AllProcessors.Add(processor);
+                }
+            }
         }
 
         private static void FindAllCommands()
@@ -84,7 +106,7 @@ namespace Lelebot
                         }
                     }
                 }
-                
+
                 if (allowed)
                 {
                     commands.Add(template);
