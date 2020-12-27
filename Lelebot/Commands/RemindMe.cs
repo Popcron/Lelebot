@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
+    [ConsoleOnly]
     public class RemindMe : IBasicCommand, IHelp
     {
         string IBasicCommand.Name => "remindme";

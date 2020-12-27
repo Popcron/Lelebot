@@ -114,7 +114,8 @@ namespace Lelebot
                     processor.OnMessageReceived(discordMessage, call);
                 }
 
-                await RunTask(call);
+                //on purpose
+                RunTask(call);
             }
         }
 
