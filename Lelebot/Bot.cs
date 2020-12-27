@@ -139,11 +139,8 @@ namespace Lelebot
                             string text = message.Text;
                             if (!string.IsNullOrEmpty(text))
                             {
-                                if (call.Origin == MessageOrigin.Console)
-                                {
-                                    Log.CommandResult(text);
-                                }
-                                else
+                                Log.CommandResult(text);
+                                if (call.Origin != MessageOrigin.Console)
                                 {
                                     await call.DiscordMessage.Channel.SendMessageAsync(text);
                                 }
