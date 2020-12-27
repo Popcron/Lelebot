@@ -3,9 +3,12 @@ using System.Threading.Tasks;
 
 namespace Lelebot.Commands
 {
-    public class CreeperAwwwMan : ICommand
+    public class FairDiceRoll : ICommand
     {
-        bool ICommand.ShouldRun(Call call) => call.RawText.Contains("creeper", StringComparison.OrdinalIgnoreCase);
+        bool ICommand.ShouldRun(Call call)
+        {
+            return call.RawText.Equals("fair dice roll", StringComparison.OrdinalIgnoreCase);
+        }
 
         async Task<Message> ICommand.Run(Call call)
         {
@@ -16,7 +19,7 @@ namespace Lelebot.Commands
             }
 
             Message message = new();
-            message.Append("aawwww maannnn");
+            message.Append("4");
             return message;
         }
     }

@@ -57,7 +57,7 @@ namespace Lelebot
         {
             TimeSpan time = DateTime.UtcNow - startTime;
             string stringTime = ((int)time.TotalSeconds).ToString();
-            string prefix = $"{stringTime} {category,14}";
+            string prefix = $"{stringTime,-7} {category,4}";
             string line = $"[{prefix}] {obj}";
             logWriter.AppendLine(line);
             dirty = true;
